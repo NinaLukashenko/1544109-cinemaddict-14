@@ -4,10 +4,13 @@ import { createFilmsTemplate } from './view/films.js';
 import { createFilmCardTemplate } from './view/film-card.js';
 import { createShowMoreButtonTemplate } from './view/show-more-button.js';
 import { createFilmDetailsPopupTemplate } from './view/film-details-popup.js';
+import { generateMovie } from './mock/film.js';
 
 const FILMS_QUANTITY = 5;
 const TOP_FILMS_QUANTITY = 2;
 const COMMENTED_FILMS_QUANTITY = 2;
+
+console.log(generateMovie());
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
@@ -42,6 +45,6 @@ for (let i = 0; i < COMMENTED_FILMS_QUANTITY; i++) {
   render(commentedFilmsListElement, createFilmCardTemplate(), 'beforeend');
 }
 
-// Попап
-const footerElement = document.querySelector('.footer');
-render(footerElement, createFilmDetailsPopupTemplate(), 'afterend');
+// // Попап
+// const footerElement = document.querySelector('.footer');
+// render(footerElement, createFilmDetailsPopupTemplate(), 'afterend');
