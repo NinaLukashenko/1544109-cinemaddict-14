@@ -15,6 +15,16 @@ const DESCRIPTIONS = [
 ];
 const GENRES = ['action', 'comedy', 'drama', 'fantasy', 'thriller'];
 
+const generateGenres = () => {
+  const startFrom = getRandomInteger(0, 2);
+  const genresQuantity = startFrom + getRandomInteger(1, 3);
+  const genres = [];
+  for (let i = startFrom; i < genresQuantity; i++) {
+    genres.push(GENRES[i]);
+  }
+  return genres;
+};
+
 const DURATIONS = ['1h 36m', '2h 20m', '1h 10m', '1h 25m', '2h 07m'];
 
 const generateDate = () => {
@@ -33,7 +43,7 @@ const generateFilm = () => {
     rating: getRandomInteger(0, 10),
     year: generateDate(),
     runtime: DURATIONS[randomNumber],
-    genre: GENRES[randomNumber],
+    genre: generateGenres(),
     description: DESCRIPTIONS[randomNumber],
     comments: getRandomInteger(0, 25),
     user_details: {
@@ -44,4 +54,4 @@ const generateFilm = () => {
   };
 };
 
-export { generateFilm };
+export { generateFilm, GENRES };
