@@ -7,13 +7,13 @@ import { createFilmDetailsPopupTemplate } from './view/film-details-popup.js';
 import { generateFilm } from './mock/film.js';
 import { createFooterStatisticsTemplate } from './view/footer-statistics.js';
 import { generateFilter } from './mock/filter.js';
+import { createSortTemplate } from './view/sort.js';
 
-const FILMS_QUANTITY = 8;
+const FILMS_QUANTITY = 13;
 const FILMS_STEP = 5;
 
 const films = new Array(FILMS_QUANTITY).fill().map(generateFilm);
 const filters = generateFilter(films);
-console.log(films);
 
 // Количество фильмов для отрисовки
 let renderedFilmsQuantity = FILMS_QUANTITY >= FILMS_STEP ? FILMS_STEP : FILMS_QUANTITY;
@@ -29,6 +29,8 @@ render(headerElement, createUserRankTemplate());
 // Меню
 const siteMainElement = document.querySelector('.main');
 render(siteMainElement, createSiteMenuTemplate(filters));
+
+render(siteMainElement, createSortTemplate());
 
 // Контент
 render(siteMainElement, createFilmsTemplate());
@@ -70,6 +72,6 @@ const footerStatisticsElement = document.querySelector('.footer__statistics');
 render(footerStatisticsElement, createFooterStatisticsTemplate(films.length));
 
 
-// // Попап
-// const footerElement = document.querySelector('.footer');
-// render(footerElement, createFilmDetailsPopupTemplate(films[0]), 'afterend');
+// Попап
+const footerElement = document.querySelector('.footer');
+render(footerElement, createFilmDetailsPopupTemplate(films[0]), 'afterend');

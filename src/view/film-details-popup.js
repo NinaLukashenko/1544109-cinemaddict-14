@@ -22,19 +22,6 @@ export const createFilmDetailsPopupTemplate = (film) => {
   const { watchlist, watched, favorite } = user_details;
   const { date, country } = release;
 
-  const watchlistClassName = watchlist
-    ? 'film-details__control-label--watchlist'
-    : 'film-details__control-label--watchlist';
-
-  const watchedClassName = watched
-    ? 'film-details__control-label--watched'
-    : 'film-details__control-label--watched';
-
-  const favoriteClassName = favorite
-    ? 'film-details__control-label--favorite'
-    : 'film-details__control-label--favorite';
-
-
   const createGenreLabel = () => {
     return genre.length > 1 ? 'Genres' : 'Genre';
   };
