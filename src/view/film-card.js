@@ -1,6 +1,9 @@
 export const createFilmCardTemplate = (film) => {
-  const { poster, title, rating, year, runtime, genre, description, comments, user_details } = film;
+  const { poster, title, rating, release, runtime, genre, description, comments, user_details } = film;
   const { watchlist, watched, favorite } = user_details;
+  const { date } = release;
+
+  const year = date.getFullYear();
 
   const watchlistClassName = watchlist
     ? 'film-card__controls-item--add-to-watchlist film-card__controls-item--active'

@@ -15,23 +15,27 @@ const DESCRIPTIONS = [
 ];
 const GENRES = ['action', 'comedy', 'drama', 'fantasy', 'thriller'];
 
-const generateGenres = () => {
+const generateArray = (originArray) => {
   const startFrom = getRandomInteger(0, 2);
-  const genresQuantity = startFrom + getRandomInteger(1, 3);
-  const genres = [];
-  for (let i = startFrom; i < genresQuantity; i++) {
-    genres.push(GENRES[i]);
+  const quantity = startFrom + getRandomInteger(1, 3);
+  const newArray = [];
+  for (let i = startFrom; i < quantity; i++) {
+    newArray.push(originArray[i]);
   }
-  return genres;
+  return newArray;
 };
 
 const DURATIONS = ['1h 36m', '2h 20m', '1h 10m', '1h 25m', '2h 07m'];
+const DIRECTORS = ['Quentin Tarantino', 'Christopher Nolan', 'Ridley Scott', 'Steven Spielberg', 'Kathleen Kennedy'];
+const WRITERS = ['Q. Tarantino', 'Ch. Nolan', 'R. Scott', 'St. Spielberg', 'K. Kennedy'];
+const ACTORS = ['Brad Pitt', 'Angelina Jolie', 'Johnny Depp', 'Cameron Diaz', 'Scarlett Johansson'];
+const COUNTRIES = ['US', 'Germany', 'Italy', 'Japanese', 'India'];
 
 const generateDate = () => {
   const maxYearsGap = 50;
   const yearsGap = getRandomInteger(-maxYearsGap, 0);
 
-  return dayjs().add(yearsGap, 'year').toDate().getFullYear();
+  return dayjs().add(yearsGap, 'year').toDate();
 };
 
 const generateFilm = () => {
@@ -40,10 +44,19 @@ const generateFilm = () => {
   return {
     poster: POSTERS[randomNumber],
     title: MOVIES[randomNumber],
+    alternative_title: MOVIES[randomNumber],
     rating: getRandomInteger(0, 10),
     year: generateDate(),
     runtime: DURATIONS[randomNumber],
-    genre: generateGenres(),
+    release: {
+      date: generateDate(),
+      country: COUNTRIES[getRandomInteger(0, 4)],
+    },
+    age_rating: getRandomInteger(12, 18),
+    director: DIRECTORS[getRandomInteger(0, 4)],
+    writers: generateArray(WRITERS),
+    actors: generateArray(ACTORS),
+    genre: generateArray(GENRES),
     description: DESCRIPTIONS[randomNumber],
     comments: getRandomInteger(0, 25),
     user_details: {

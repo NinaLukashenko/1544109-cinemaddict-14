@@ -1,8 +1,22 @@
-import { GENRES } from "../mock/film";
+import { humanizeTaskDueDate } from '../utils.js';
 
 export const createFilmDetailsPopupTemplate = (film) => {
-  const { poster, title, rating, runtime, genre, description, user_details } = film;
+  const {
+    poster,
+    title,
+    rating,
+    runtime,
+    genre,
+    description,
+    user_details,
+    director,
+    writers,
+    actors,
+    release,
+
+  } = film;
   const { watchlist, watched, favorite } = user_details;
+  const { date, country } = release;
 
   const watchlistClassName = watchlist
     ? 'film-details__control-label--watchlist'
@@ -21,10 +35,20 @@ export const createFilmDetailsPopupTemplate = (film) => {
     return genre.length > 1 ? 'Genres' : 'Genre';
   };
 
-  const createGenre = () => {
+  const createGenres = () => {
     return genre.reduce((prev, item) => {
       return `${prev}
               <span class="film-details__genre">${item}</span>`;
+    }, '');
+  };
+
+  const createList = (people) => {
+    return people.reduce((prev, item, index) => {
+      if (index === people.length - 1) {
+        return `${prev}${item}`;
+      } else {
+        return `${prev}${item}, `;
+      }
     }, '');
   };
 
@@ -56,19 +80,19 @@ export const createFilmDetailsPopupTemplate = (film) => {
           <table class="film-details__table">
             <tr class="film-details__row">
               <td class="film-details__term">Director</td>
-              <td class="film-details__cell">Anthony Mann</td>
+              <td class="film-details__cell">${director}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Writers</td>
-              <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+              <td class="film-details__cell">${createList(writers)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Actors</td>
-              <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
+              <td class="film-details__cell">${createList(actors)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">30 March 1945</td>
+              <td class="film-details__cell">${humanizeTaskDueDate(date)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -76,12 +100,12 @@ export const createFilmDetailsPopupTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
-              <td class="film-details__cell">USA</td>
+              <td class="film-details__cell">${country}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">${createGenreLabel()}</td>
               <td class="film-details__cell">
-                ${createGenre()}
+                ${createGenres()}
               </td>
             </tr>
           </table>
