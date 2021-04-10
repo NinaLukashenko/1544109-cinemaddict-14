@@ -14,6 +14,19 @@ const DESCRIPTIONS = [
   'Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
 ];
 const GENRES = ['action', 'comedy', 'drama', 'fantasy', 'thriller'];
+const DURATIONS = ['1h 36m', '2h 20m', '1h 10m', '1h 25m', '2h 07m'];
+const DIRECTORS = ['Quentin Tarantino', 'Christopher Nolan', 'Ridley Scott', 'Steven Spielberg', 'Kathleen Kennedy'];
+const WRITERS = ['Q. Tarantino', 'Ch. Nolan', 'R. Scott', 'St. Spielberg', 'K. Kennedy'];
+const ACTORS = ['Brad Pitt', 'Angelina Jolie', 'Johnny Depp', 'Cameron Diaz', 'Scarlett Johansson'];
+const COUNTRIES = ['US', 'Germany', 'Italy', 'Japanese', 'India'];
+const COMMENTS = [
+  { id: 1, text: 'Cool movie!', emotion: 'smile', author: 'Tom', date: new Date(2018, 11, 7, 22, 0) },
+  { id: 2, text: 'Too boring!', emotion: 'sleeping', author: 'Barbara', date: new Date(2020, 7, 9, 10, 10) },
+  { id: 3, text: 'Not mine genre!', emotion: 'angry', author: 'Ben', date: new Date(2021, 2, 11, 19, 30) },
+  { id: 4, text: 'Awful!', emotion: 'puke', author: 'Lora', date: new Date(2020, 8, 5, 20, 8) },
+  { id: 5, text: 'Amazing!', emotion: 'smile', author: 'Robert', date: new Date(2019, 9, 15, 19, 1) },
+];
+
 
 const generateArray = (originArray) => {
   const startFrom = getRandomInteger(0, 2);
@@ -25,17 +38,21 @@ const generateArray = (originArray) => {
   return newArray;
 };
 
-const DURATIONS = ['1h 36m', '2h 20m', '1h 10m', '1h 25m', '2h 07m'];
-const DIRECTORS = ['Quentin Tarantino', 'Christopher Nolan', 'Ridley Scott', 'Steven Spielberg', 'Kathleen Kennedy'];
-const WRITERS = ['Q. Tarantino', 'Ch. Nolan', 'R. Scott', 'St. Spielberg', 'K. Kennedy'];
-const ACTORS = ['Brad Pitt', 'Angelina Jolie', 'Johnny Depp', 'Cameron Diaz', 'Scarlett Johansson'];
-const COUNTRIES = ['US', 'Germany', 'Italy', 'Japanese', 'India'];
-
 const generateDate = () => {
   const maxYearsGap = 50;
   const yearsGap = getRandomInteger(-maxYearsGap, 0);
 
   return dayjs().add(yearsGap, 'year').toDate();
+};
+
+
+const generateComments = () => {
+  const commentsSet = generateArray(COMMENTS);
+  const comments = [];
+  commentsSet.forEach((item) => {
+    comments.push(item.id);
+  });
+  return comments;
 };
 
 const generateFilm = () => {
@@ -52,13 +69,13 @@ const generateFilm = () => {
       date: generateDate(),
       country: COUNTRIES[getRandomInteger(0, 4)],
     },
-    age_rating: getRandomInteger(12, 18),
+    age_rating: getRandomInteger(5, 18),
     director: DIRECTORS[getRandomInteger(0, 4)],
     writers: generateArray(WRITERS),
     actors: generateArray(ACTORS),
     genre: generateArray(GENRES),
     description: DESCRIPTIONS[randomNumber],
-    comments: getRandomInteger(0, 25),
+    comments: generateComments(),
     user_details: {
       watchlist: Boolean(getRandomInteger(0, 1)),
       watched: Boolean(getRandomInteger(0, 1)),
@@ -67,4 +84,4 @@ const generateFilm = () => {
   };
 };
 
-export { generateFilm, GENRES };
+export { generateFilm, GENRES, COMMENTS };

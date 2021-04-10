@@ -9,6 +9,10 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
-export const humanizeTaskDueDate = (dueDate) => {
+export const humanizeFilmDate = (dueDate) => {
   return dayjs(dueDate).format('DD MMMM YYYY');
+};
+
+export const humanizeFilmDateTime = (dueDate) => {
+  return dayjs(dueDate).format('DD MMMM YYYY HH:mm');
 };
