@@ -4,44 +4,74 @@ import { createFilmsTemplate } from './view/films.js';
 import { createFilmCardTemplate } from './view/film-card.js';
 import { createShowMoreButtonTemplate } from './view/show-more-button.js';
 import { createFilmDetailsPopupTemplate } from './view/film-details-popup.js';
+import { generateFilm } from './mock/film.js';
+import { createFooterStatisticsTemplate } from './view/footer-statistics.js';
+import { generateFilter } from './mock/filter.js';
+import { createSortTemplate } from './view/sort.js';
 
-const FILMS_QUANTITY = 5;
-const TOP_FILMS_QUANTITY = 2;
-const COMMENTED_FILMS_QUANTITY = 2;
+const FILMS_QUANTITY = 13;
+const FILMS_STEP = 5;
 
-const render = (container, template, place) => {
+const films = new Array(FILMS_QUANTITY).fill().map(generateFilm);
+const filters = generateFilter(films);
+
+// Количество фильмов для отрисовки
+let renderedFilmsQuantity = FILMS_QUANTITY >= FILMS_STEP ? FILMS_STEP : FILMS_QUANTITY;
+
+const render = (container, template, place = 'beforeend') => {
   container.insertAdjacentHTML(place, template);
 };
 
 // Звание пользователя
 const headerElement = document.querySelector('.header');
-render(headerElement, createUserRankTemplate(), 'beforeend');
+render(headerElement, createUserRankTemplate());
 
 // Меню
 const siteMainElement = document.querySelector('.main');
-render(siteMainElement, createSiteMenuTemplate(), 'beforeend');
+render(siteMainElement, createSiteMenuTemplate(filters));
+
+render(siteMainElement, createSortTemplate());
 
 // Контент
-render(siteMainElement, createFilmsTemplate(), 'beforeend');
+render(siteMainElement, createFilmsTemplate());
 
-const filmsListContainerElement = siteMainElement.querySelector('.films .films-list:first-child .films-list__container');
-for (let i = 0; i < FILMS_QUANTITY; i++) {
-  render(filmsListContainerElement, createFilmCardTemplate(), 'beforeend');
+const filmsListContainerElement = siteMainElement.querySelector('.films .films-list .films-list__container');
+
+for (let i = 0; i < renderedFilmsQuantity; i++) {
+  render(filmsListContainerElement, createFilmCardTemplate(films[i]));
 }
 
+// Кнопка "Show more"
 const filmsListElement = siteMainElement.querySelector('.films-list');
-render(filmsListElement, createShowMoreButtonTemplate(), 'beforeend');
 
-const topFilmsListElement = siteMainElement.querySelector('.films .films-list:nth-child(2) .films-list__container');
-for (let i = 0; i < TOP_FILMS_QUANTITY; i++) {
-  render(topFilmsListElement, createFilmCardTemplate(), 'beforeend');
+if (FILMS_QUANTITY > renderedFilmsQuantity) {
+  render(filmsListElement, createShowMoreButtonTemplate());
+
+  const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
+
+  showMoreElement.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    films
+      .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
+      .forEach((item) => {
+        render(filmsListContainerElement, createFilmCardTemplate(item));
+      });
+
+    renderedFilmsQuantity += FILMS_STEP;
+
+    // Проверка нужно ли прятать кнопку
+    if (FILMS_QUANTITY <= renderedFilmsQuantity) {
+      showMoreElement.remove();
+    }
+  });
+
 }
 
-const commentedFilmsListElement = siteMainElement.querySelector('.films .films-list:nth-child(3) .films-list__container');
-for (let i = 0; i < COMMENTED_FILMS_QUANTITY; i++) {
-  render(commentedFilmsListElement, createFilmCardTemplate(), 'beforeend');
-}
+// Статистика в подвале
+const footerStatisticsElement = document.querySelector('.footer__statistics');
+render(footerStatisticsElement, createFooterStatisticsTemplate(films.length));
+
 
 // Попап
 const footerElement = document.querySelector('.footer');
-render(footerElement, createFilmDetailsPopupTemplate(), 'afterend');
+render(footerElement, createFilmDetailsPopupTemplate(films[0]), 'afterend');
