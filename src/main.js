@@ -61,21 +61,19 @@ const renderFilms = (films) => {
   const filmsComponent = new FilmsView();
   render(siteMainElement, filmsComponent.getElement());
 
+  const filmsListElement = filmsComponent.getElement().querySelector('.films-list');
   const filmsListContainerElement = filmsComponent.getElement().querySelector('.films-list__container');
 
   for (let i = 0; i < renderedFilmsQuantity; i++) {
     renderFilmCard(filmsListContainerElement, films[i]);
   }
 
-  // Кнопка "Show more"
-  const filmsListElement = siteMainElement.querySelector('.films-list');
-
   if (FILMS_QUANTITY > renderedFilmsQuantity) {
-    render(filmsListElement, new ShowMoreButtonView().getElement());
+    // Кнопка "Show more"
+    const showMoreButtonComponent = new ShowMoreButtonView();
+    render(filmsListElement, showMoreButtonComponent.getElement());
 
-    const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
-
-    showMoreElement.addEventListener('click', (evt) => {
+    showMoreButtonComponent.getElement().addEventListener('click', (evt) => {
       evt.preventDefault();
       films
         .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
@@ -87,11 +85,10 @@ const renderFilms = (films) => {
 
       // Проверка нужно ли прятать кнопку
       if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-        showMoreElement.remove();
+        showMoreButtonComponent.getElement().remove();
       }
     });
   }
-
 };
 
 // Список фильмов
