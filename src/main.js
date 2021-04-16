@@ -1,77 +1,98 @@
-import { createUserRankTemplate } from './view/user-rank.js';
-import { createSiteMenuTemplate } from './view/site-menu.js';
-import { createFilmsTemplate } from './view/films.js';
-import { createFilmCardTemplate } from './view/film-card.js';
-import { createShowMoreButtonTemplate } from './view/show-more-button.js';
-import { createFilmDetailsPopupTemplate } from './view/film-details-popup.js';
+import { FILMS_QUANTITY, FILMS_STEP } from './const.js';
 import { generateFilm } from './mock/film.js';
-import { createFooterStatisticsTemplate } from './view/footer-statistics.js';
 import { generateFilter } from './mock/filter.js';
-import { createSortTemplate } from './view/sort.js';
+import { render } from './utils.js';
+import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
+import SiteMenuView from './view/site-menu.js';
+import SortView from './view/sort.js';
+import FilmsView from './view/films.js';
+import FilmCardView from './view/film-card.js';
+import ShowMoreButtonView from './view/show-more-button.js';
+import FilmDetailsPopupView from './view/film-details-popup.js';
+import FooterStatisticsView from './view/footer-statistics.js';
 
-const FILMS_QUANTITY = 13;
-const FILMS_STEP = 5;
-
-const films = new Array(FILMS_QUANTITY).fill().map(generateFilm);
+const films = new Array(FILMS_QUANTITY).fill().map((item, index) => generateFilm(index + 1));
 const filters = generateFilter(films);
+
+const headerElement = document.querySelector('.header');
+const siteMainElement = document.querySelector('.main');
+const footerElement = document.querySelector('.footer');
+const footerStatisticsElement = document.querySelector('.footer__statistics');
 
 // Количество фильмов для отрисовки
 let renderedFilmsQuantity = FILMS_QUANTITY >= FILMS_STEP ? FILMS_STEP : FILMS_QUANTITY;
 
-const render = (container, template, place = 'beforeend') => {
-  container.insertAdjacentHTML(place, template);
-};
+render(headerElement, new UserRankView().getElement());
+render(siteMainElement, new SiteMenuView(filters).getElement());
+render(siteMainElement, new SortView().getElement());
 
-// Звание пользователя
-const headerElement = document.querySelector('.header');
-render(headerElement, createUserRankTemplate());
+const renderFilmCard = (filmsComponent, filmCard) => {
+  const filmCardComponent = new FilmCardView(filmCard);
 
-// Меню
-const siteMainElement = document.querySelector('.main');
-render(siteMainElement, createSiteMenuTemplate(filters));
+  render(filmsComponent, filmCardComponent.getElement());
 
-render(siteMainElement, createSortTemplate());
+  // Попап с детальным описанием фильма
+  const showFilmDetailPopup = () => {
+    const filmDetailPopupComponent = new FilmDetailsPopupView(filmCard);
+    footerElement.appendChild(filmDetailPopupComponent.getElement());
+    document.body.classList.add('hide-overflow');
 
-// Контент
-render(siteMainElement, createFilmsTemplate());
+    filmDetailPopupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+      footerElement.removeChild(filmDetailPopupComponent.getElement());
+      document.body.classList.remove('hide-overflow');
+    });
+  };
 
-const filmsListContainerElement = siteMainElement.querySelector('.films .films-list .films-list__container');
-
-for (let i = 0; i < renderedFilmsQuantity; i++) {
-  render(filmsListContainerElement, createFilmCardTemplate(films[i]));
-}
-
-// Кнопка "Show more"
-const filmsListElement = siteMainElement.querySelector('.films-list');
-
-if (FILMS_QUANTITY > renderedFilmsQuantity) {
-  render(filmsListElement, createShowMoreButtonTemplate());
-
-  const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
-
-  showMoreElement.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    films
-      .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
-      .forEach((item) => {
-        render(filmsListContainerElement, createFilmCardTemplate(item));
-      });
-
-    renderedFilmsQuantity += FILMS_STEP;
-
-    // Проверка нужно ли прятать кнопку
-    if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-      showMoreElement.remove();
-    }
+  // Обработчики событий на элементах карточки фильма
+  filmCardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
+    showFilmDetailPopup();
   });
 
-}
+  filmCardComponent.getElement().querySelector('.film-card__title').addEventListener('click', () => {
+    showFilmDetailPopup();
+  });
+
+  filmCardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', () => {
+    showFilmDetailPopup();
+  });
+};
+
+const renderFilms = (films) => {
+  const filmsComponent = new FilmsView();
+  render(siteMainElement, filmsComponent.getElement());
+
+  const filmsListElement = filmsComponent.getElement().querySelector('.films-list');
+  const filmsListContainerElement = filmsComponent.getElement().querySelector('.films-list__container');
+
+  for (let i = 0; i < renderedFilmsQuantity; i++) {
+    renderFilmCard(filmsListContainerElement, films[i]);
+  }
+
+  if (FILMS_QUANTITY > renderedFilmsQuantity) {
+    // Кнопка "Show more"
+    const showMoreButtonComponent = new ShowMoreButtonView();
+    render(filmsListElement, showMoreButtonComponent.getElement());
+
+    showMoreButtonComponent.getElement().addEventListener('click', (evt) => {
+      evt.preventDefault();
+      films
+        .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
+        .forEach((item) => {
+          renderFilmCard(filmsListContainerElement, item);
+        });
+
+      renderedFilmsQuantity += FILMS_STEP;
+
+      // Проверка нужно ли прятать кнопку
+      if (FILMS_QUANTITY <= renderedFilmsQuantity) {
+        showMoreButtonComponent.getElement().remove();
+      }
+    });
+  }
+};
+
+// Список фильмов
+renderFilms(films);
 
 // Статистика в подвале
-const footerStatisticsElement = document.querySelector('.footer__statistics');
-render(footerStatisticsElement, createFooterStatisticsTemplate(films.length));
-
-
-// Попап
-const footerElement = document.querySelector('.footer');
-render(footerElement, createFilmDetailsPopupTemplate(films[0]), 'afterend');
+render(footerStatisticsElement, new FooterStatisticsView(films.length).getElement());
