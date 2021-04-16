@@ -1,7 +1,7 @@
 import { FILMS_QUANTITY, FILMS_STEP } from './const.js';
 import { generateFilm } from './mock/film.js';
 import { generateFilter } from './mock/filter.js';
-import { render, RenderPosition } from './utils.js';
+import { render } from './utils.js';
 import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
 import SiteMenuView from './view/site-menu.js';
 import SortView from './view/sort.js';
@@ -14,60 +14,88 @@ import FooterStatisticsView from './view/footer-statistics.js';
 const films = new Array(FILMS_QUANTITY).fill().map((item, index) => generateFilm(index + 1));
 const filters = generateFilter(films);
 
+const headerElement = document.querySelector('.header');
+const siteMainElement = document.querySelector('.main');
+const footerElement = document.querySelector('.footer');
+const footerStatisticsElement = document.querySelector('.footer__statistics');
+
 // Количество фильмов для отрисовки
 let renderedFilmsQuantity = FILMS_QUANTITY >= FILMS_STEP ? FILMS_STEP : FILMS_QUANTITY;
 
-
-// Звание пользователя
-const headerElement = document.querySelector('.header');
 render(headerElement, new UserRankView().getElement());
-
-// Меню
-const siteMainElement = document.querySelector('.main');
 render(siteMainElement, new SiteMenuView(filters).getElement());
-// Сортировка
 render(siteMainElement, new SortView().getElement());
 
-// Контент
-render(siteMainElement, new FilmsView().getElement());
+const renderFilmCard = (filmsComponent, filmCard) => {
+  const filmCardComponent = new FilmCardView(filmCard);
 
-const filmsListContainerElement = siteMainElement.querySelector('.films .films-list .films-list__container');
+  render(filmsComponent, filmCardComponent.getElement());
 
-for (let i = 0; i < renderedFilmsQuantity; i++) {
-  render(filmsListContainerElement, new FilmCardView(films[i]).getElement());
-}
+  // Попап с детальным описанием фильма
+  const showFilmDetailPopup = () => {
+    const filmDetailPopupComponent = new FilmDetailsPopupView(filmCard);
+    footerElement.appendChild(filmDetailPopupComponent.getElement());
+    document.body.classList.add('hide-overflow');
 
-// Кнопка "Show more"
-const filmsListElement = siteMainElement.querySelector('.films-list');
+    filmDetailPopupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+      footerElement.removeChild(filmDetailPopupComponent.getElement());
+      document.body.classList.remove('hide-overflow');
+    });
+  };
 
-if (FILMS_QUANTITY > renderedFilmsQuantity) {
-  render(filmsListElement, new ShowMoreButtonView().getElement());
-
-  const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
-
-  showMoreElement.addEventListener('click', (evt) => {
-    evt.preventDefault();
-    films
-      .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
-      .forEach((item) => {
-        render(filmsListContainerElement, new FilmCardView(item).getElement());
-      });
-
-    renderedFilmsQuantity += FILMS_STEP;
-
-    // Проверка нужно ли прятать кнопку
-    if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-      showMoreElement.remove();
-    }
+  // Обработчики событий на элементах карточки фильма
+  filmCardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
+    showFilmDetailPopup();
   });
 
-}
+  filmCardComponent.getElement().querySelector('.film-card__title').addEventListener('click', () => {
+    showFilmDetailPopup();
+  });
+
+  filmCardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', () => {
+    showFilmDetailPopup();
+  });
+};
+
+const renderFilms = (films) => {
+  const filmsComponent = new FilmsView();
+  render(siteMainElement, filmsComponent.getElement());
+
+  const filmsListContainerElement = filmsComponent.getElement().querySelector('.films-list__container');
+
+  for (let i = 0; i < renderedFilmsQuantity; i++) {
+    renderFilmCard(filmsListContainerElement, films[i]);
+  }
+
+  // Кнопка "Show more"
+  const filmsListElement = siteMainElement.querySelector('.films-list');
+
+  if (FILMS_QUANTITY > renderedFilmsQuantity) {
+    render(filmsListElement, new ShowMoreButtonView().getElement());
+
+    const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
+
+    showMoreElement.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      films
+        .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
+        .forEach((item) => {
+          renderFilmCard(filmsListContainerElement, item);
+        });
+
+      renderedFilmsQuantity += FILMS_STEP;
+
+      // Проверка нужно ли прятать кнопку
+      if (FILMS_QUANTITY <= renderedFilmsQuantity) {
+        showMoreElement.remove();
+      }
+    });
+  }
+
+};
+
+// Список фильмов
+renderFilms(films);
 
 // Статистика в подвале
-const footerStatisticsElement = document.querySelector('.footer__statistics');
 render(footerStatisticsElement, new FooterStatisticsView(films.length).getElement());
-
-
-// Попап
-const footerElement = document.querySelector('.footer');
-render(footerElement, new FilmDetailsPopupView(films[0]).getElement());

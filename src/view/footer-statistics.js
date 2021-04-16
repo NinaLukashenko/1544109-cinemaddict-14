@@ -1,9 +1,7 @@
 import { createElement } from '../utils.js';
 
 const createFooterStatisticsTemplate = (quantity) => {
-  return `
-    <p>${quantity} movies inside</p>
-  `;
+  return `<p> ${quantity} movies inside</p>`;
 };
 
 export default class FooterStatistics {
