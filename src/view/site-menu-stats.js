@@ -1,17 +1,17 @@
 import { createElement } from '../utils.js';
 
-const createSiteMenuTemplate = () => {
-  return `<nav class="main-navigation">
-  </nav>`;
+const createSiteMenuStatsTemplate = () => {
+  return `
+    <a href="#stats" class="main-navigation__additional">Stats</a>`;
 };
 
-export default class SiteMenu {
+export default class SiteMenuStats {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
-    return createSiteMenuTemplate();
+    return createSiteMenuStatsTemplate();
   }
 
   getElement() {

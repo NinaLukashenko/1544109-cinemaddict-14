@@ -1,7 +1,8 @@
+import { createElement } from '../utils.js';
 import { humanizeFilmDate, humanizeFilmDateTime } from '../utils.js';
 import { COMMENTS } from '../mock/film.js';
 
-export const createFilmDetailsPopupTemplate = (film) => {
+const createFilmDetailsPopupTemplate = (film) => {
   const {
     poster,
     title,
@@ -187,3 +188,26 @@ export const createFilmDetailsPopupTemplate = (film) => {
   </form>
 </section>`;
 };
+
+export default class FilmDetailsPopup {
+  constructor(film) {
+    this._film = film;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmDetailsPopupTemplate(this._film);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

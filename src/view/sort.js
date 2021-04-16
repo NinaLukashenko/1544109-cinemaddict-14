@@ -1,6 +1,7 @@
+import { createElement } from '../utils.js';
 import { SORTS } from '../const.js';
 
-export const createSortTemplate = () => {
+const createSortTemplate = () => {
   const sortList = SORTS.reduce((prev, item, index) => {
     const sortClass = index === 2
       ? 'sort__button--active'
@@ -17,3 +18,25 @@ export const createSortTemplate = () => {
     ${sortList}
   </ul>`;
 };
+
+export default class Sort {
+  constructor() {
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createSortTemplate();
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
