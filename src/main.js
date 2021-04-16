@@ -1,17 +1,17 @@
-import { createSiteMenuTemplate } from './view/site-menu.js';
-import { createFilmsTemplate } from './view/films.js';
-import { createFilmCardTemplate } from './view/film-card.js';
-import { createShowMoreButtonTemplate } from './view/show-more-button.js';
-import { createFilmDetailsPopupTemplate } from './view/film-details-popup.js';
-import { generateFilm } from './mock/film.js';
-import { createFooterStatisticsTemplate } from './view/footer-statistics.js';
-import { generateFilter } from './mock/filter.js';
-import { createSortTemplate } from './view/sort.js';
 import { FILMS_QUANTITY, FILMS_STEP } from './const.js';
-import { render, createElement, RenderPosition } from './utils.js';
+import { generateFilm } from './mock/film.js';
+import { generateFilter } from './mock/filter.js';
+import { render, RenderPosition } from './utils.js';
 import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
+import SiteMenuView from './view/site-menu.js';
+import SortView from './view/sort.js';
+import FilmsView from './view/films.js';
+import FilmCardView from './view/film-card.js';
+import ShowMoreButtonView from './view/show-more-button.js';
+import FilmDetailsPopupView from './view/film-details-popup.js';
+import FooterStatisticsView from './view/footer-statistics.js';
 
-const films = new Array(FILMS_QUANTITY).fill().map(generateFilm);
+const films = new Array(FILMS_QUANTITY).fill().map((item, index) => generateFilm(index + 1));
 const filters = generateFilter(films);
 
 // Количество фильмов для отрисовки
@@ -20,54 +20,54 @@ let renderedFilmsQuantity = FILMS_QUANTITY >= FILMS_STEP ? FILMS_STEP : FILMS_QU
 
 // Звание пользователя
 const headerElement = document.querySelector('.header');
-render(headerElement, new UserRankView().getElement(), RenderPosition.BEFOREEND );
+render(headerElement, new UserRankView().getElement());
 
-// // Меню
-// const siteMainElement = document.querySelector('.main');
-// render(siteMainElement, createSiteMenuTemplate(filters));
+// Меню
+const siteMainElement = document.querySelector('.main');
+render(siteMainElement, new SiteMenuView(filters).getElement());
+// Сортировка
+render(siteMainElement, new SortView().getElement());
 
-// render(siteMainElement, createSortTemplate());
+// Контент
+render(siteMainElement, new FilmsView().getElement());
 
-// // Контент
-// render(siteMainElement, createFilmsTemplate());
+const filmsListContainerElement = siteMainElement.querySelector('.films .films-list .films-list__container');
 
-// const filmsListContainerElement = siteMainElement.querySelector('.films .films-list .films-list__container');
+for (let i = 0; i < renderedFilmsQuantity; i++) {
+  render(filmsListContainerElement, new FilmCardView(films[i]).getElement());
+}
 
-// for (let i = 0; i < renderedFilmsQuantity; i++) {
-//   render(filmsListContainerElement, createFilmCardTemplate(films[i]));
-// }
+// Кнопка "Show more"
+const filmsListElement = siteMainElement.querySelector('.films-list');
 
-// // Кнопка "Show more"
-// const filmsListElement = siteMainElement.querySelector('.films-list');
+if (FILMS_QUANTITY > renderedFilmsQuantity) {
+  render(filmsListElement, new ShowMoreButtonView().getElement());
 
-// if (FILMS_QUANTITY > renderedFilmsQuantity) {
-//   render(filmsListElement, createShowMoreButtonTemplate());
+  const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
 
-//   const showMoreElement = filmsListElement.querySelector('.films-list__show-more');
+  showMoreElement.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    films
+      .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
+      .forEach((item) => {
+        render(filmsListContainerElement, new FilmCardView(item).getElement());
+      });
 
-//   showMoreElement.addEventListener('click', (evt) => {
-//     evt.preventDefault();
-//     films
-//       .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
-//       .forEach((item) => {
-//         render(filmsListContainerElement, createFilmCardTemplate(item));
-//       });
+    renderedFilmsQuantity += FILMS_STEP;
 
-//     renderedFilmsQuantity += FILMS_STEP;
+    // Проверка нужно ли прятать кнопку
+    if (FILMS_QUANTITY <= renderedFilmsQuantity) {
+      showMoreElement.remove();
+    }
+  });
 
-//     // Проверка нужно ли прятать кнопку
-//     if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-//       showMoreElement.remove();
-//     }
-//   });
+}
 
-// }
-
-// // Статистика в подвале
-// const footerStatisticsElement = document.querySelector('.footer__statistics');
-// render(footerStatisticsElement, createFooterStatisticsTemplate(films.length));
+// Статистика в подвале
+const footerStatisticsElement = document.querySelector('.footer__statistics');
+render(footerStatisticsElement, new FooterStatisticsView(films.length).getElement());
 
 
-// // Попап
-// const footerElement = document.querySelector('.footer');
-// render(footerElement, createFilmDetailsPopupTemplate(films[0]), 'afterend');
+// Попап
+const footerElement = document.querySelector('.footer');
+render(footerElement, new FilmDetailsPopupView(films[0]).getElement());

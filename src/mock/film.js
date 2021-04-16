@@ -55,10 +55,11 @@ const generateComments = () => {
   return comments;
 };
 
-const generateFilm = () => {
+const generateFilm = (filmId) => {
   const randomNumber =  getRandomInteger(0, 4);
 
   return {
+    id: filmId,
     poster: POSTERS[randomNumber],
     title: MOVIES[randomNumber],
     alternative_title: MOVIES[randomNumber],
