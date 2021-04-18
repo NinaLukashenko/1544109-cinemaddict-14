@@ -57,7 +57,7 @@ const createFilmDetailsPopupTemplate = (film) => {
                 <p class="film-details__comment-text">${item.text}</p>
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${item.author}</span>
-                  <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATE)}</span>
+                  <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
                   <button class="film-details__comment-delete">Delete</button>
                 </p>
               </div>
@@ -110,7 +110,7 @@ const createFilmDetailsPopupTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${humanizeDate(date, DateFormat.DATETIME)}</td>
+              <td class="film-details__cell">${humanizeDate(date, DateFormat.DATE)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>

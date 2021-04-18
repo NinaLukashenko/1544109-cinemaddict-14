@@ -7,5 +7,5 @@ export const DateFormat = {
 };
 
 export const humanizeDate = (date, format) => {
-  return dayjs(date).format(DateFormat[format]);
+  return dayjs(date).format(format);
 };
