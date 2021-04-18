@@ -1,7 +1,7 @@
 import { FILMS_QUANTITY, FILMS_STEP } from './const.js';
 import { generateFilm } from './mock/film.js';
 import { generateFilter } from './mock/filter.js';
-import { render } from './utils.js';
+import { remove, render } from './utils/render';
 import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
 import SiteMenuView from './view/site-menu.js';
 import SortView from './view/sort.js';
@@ -37,24 +37,17 @@ const renderFilmCard = (filmsComponent, filmCard) => {
     footerElement.appendChild(filmDetailPopupComponent.getElement());
     document.body.classList.add('hide-overflow');
 
-    filmDetailPopupComponent.getElement().querySelector('.film-details__close-btn').addEventListener('click', () => {
+    filmDetailPopupComponent.setCloseBtnClickHandler(() => {
       footerElement.removeChild(filmDetailPopupComponent.getElement());
       document.body.classList.remove('hide-overflow');
     });
   };
 
-  // Обработчики событий на элементах карточки фильма
-  filmCardComponent.getElement().querySelector('.film-card__poster').addEventListener('click', () => {
+  // Обработчик событий на элементах карточки фильма
+  filmCardComponent.setFilmClickHandler(() => {
     showFilmDetailPopup();
   });
 
-  filmCardComponent.getElement().querySelector('.film-card__title').addEventListener('click', () => {
-    showFilmDetailPopup();
-  });
-
-  filmCardComponent.getElement().querySelector('.film-card__comments').addEventListener('click', () => {
-    showFilmDetailPopup();
-  });
 };
 
 const renderFilms = (films) => {
@@ -73,19 +66,16 @@ const renderFilms = (films) => {
     const showMoreButtonComponent = new ShowMoreButtonView();
     render(filmsListElement, showMoreButtonComponent.getElement());
 
-    showMoreButtonComponent.getElement().addEventListener('click', (evt) => {
-      evt.preventDefault();
+    showMoreButtonComponent.setClickHandler(() => {
       films
         .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
-        .forEach((item) => {
-          renderFilmCard(filmsListContainerElement, item);
-        });
+        .forEach((item) => renderFilmCard(filmsListContainerElement, item));
 
       renderedFilmsQuantity += FILMS_STEP;
 
       // Проверка нужно ли прятать кнопку
       if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-        showMoreButtonComponent.getElement().remove();
+        remove(showMoreButtonComponent);
       }
     });
   }

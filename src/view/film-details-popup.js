@@ -1,5 +1,5 @@
-import { createElement } from '../utils.js';
-import { humanizeFilmDate, humanizeFilmDateTime } from '../utils.js';
+import AbstractView from './abstract.js';
+import { humanizeDate, DateFormat } from '../utils/date.js';
 import { COMMENTS } from '../mock/film.js';
 
 const createFilmDetailsPopupTemplate = (film) => {
@@ -57,7 +57,7 @@ const createFilmDetailsPopupTemplate = (film) => {
                 <p class="film-details__comment-text">${item.text}</p>
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${item.author}</span>
-                  <span class="film-details__comment-day">${humanizeFilmDateTime(item.date)}</span>
+                  <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATE)}</span>
                   <button class="film-details__comment-delete">Delete</button>
                 </p>
               </div>
@@ -110,7 +110,7 @@ const createFilmDetailsPopupTemplate = (film) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${humanizeFilmDate(date)}</td>
+              <td class="film-details__cell">${humanizeDate(date, DateFormat.DATETIME)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
@@ -189,25 +189,27 @@ const createFilmDetailsPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class FilmDetailsPopup {
+export default class FilmDetailsPopup extends AbstractView {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
+    // Привяжем обработчик к контексту
+    this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilmDetailsPopupTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  _closeBtnClickHandler() {
+    // Внутри абстрактного обработчика вызовем колбэк
+    this._callback.closeBtnClick();
   }
 
-  removeElement() {
-    this._element = null;
+  setCloseBtnClickHandler(callback) {
+    // Колбэк запишем во внутреннее свойство
+    this._callback.closeBtnClick = callback;
+    // В addEventListener передадим абстрактный обработчик
+    this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeBtnClickHandler);
   }
 }
