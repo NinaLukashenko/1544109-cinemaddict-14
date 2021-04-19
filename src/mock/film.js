@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { getRandomInteger } from '../utils.js';
+import { getRandomInteger } from '../utils/common';
 
 const POSTERS = ['made-for-each-other.png', 'popeye-meets-sinbad.png', 'sagebrush-trail.jpg', 'the-dance-of-life.jpg', 'the-great-flamarion.jpg'];
 const MOVIES = ['Made For Each Other', 'Popeye Meets Sinbad', 'Sagebrush Rail', 'The Dance Of Life', 'The Great Flamarion'];

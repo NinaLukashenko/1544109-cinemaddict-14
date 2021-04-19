@@ -1,18 +1,25 @@
-import dayjs from 'dayjs';
+import Abstract from '../view/abstract.js';
 
-// Перечисление
 export const RenderPosition = {
   AFTERBEGIN: 'afterbegin',
   BEFOREEND: 'beforeend',
 };
 
-export const render = (container, element, place = RenderPosition.BEFOREEND) => {
+export const render = (container, child, place = RenderPosition.BEFOREEND) => {
+  if (container instanceof Abstract) {
+    container = container.getElement();
+  }
+
+  if (child instanceof Abstract) {
+    child = child.getElement();
+  }
+
   switch (place) {
     case RenderPosition.AFTERBEGIN:
-      container.prepend(element);
+      container.prepend(child);
       break;
     case RenderPosition.BEFOREEND:
-      container.append(element);
+      container.append(child);
       break;
   }
 };
@@ -32,19 +39,12 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-// Функция из интернета по генерации случайного числа из диапазона
-// Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_random
-export const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
+export const remove = (component) => {
+  if (!(component instanceof Abstract)) {
+    throw new Error('Can remove only components');
+  }
 
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
+  component.getElement().remove();
+  component.removeElement();
 };
 
-export const humanizeFilmDate = (dueDate) => {
-  return dayjs(dueDate).format('DD MMMM YYYY');
-};
-
-export const humanizeFilmDateTime = (dueDate) => {
-  return dayjs(dueDate).format('DD MMMM YYYY HH:mm');
-};
