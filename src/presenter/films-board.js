@@ -1,19 +1,22 @@
 import { remove, render } from '../utils/render.js';
+import { updateItem } from '../utils/common.js';
 import { FILMS_STEP } from '../const.js';
 import SortView from '../view/sort.js';
 import FilmsView from '../view/films.js';
-import FilmCardPresenter from './film.js';
+import FilmCardPresenter from './film-card.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 
 export default class FilmsBoard {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsQuantity = FILMS_STEP;
+    this._filmCardPresenter = {};
 
     this._sortComponent = new SortView();
     this._filmsComponent = new FilmsView();
     this._showMoreButtonComponent = new ShowMoreButtonView();
 
+    this._handleFilmChange = this._handleFilmChange.bind(this);
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
@@ -27,11 +30,17 @@ export default class FilmsBoard {
     render(this._filmsContainer, this._sortComponent);
   }
 
+  _handleFilmChange(updatedFilm) {
+    this._films = updateItem(this._films, updatedFilm);
+    this._filmCardPresenter[updatedFilm.id].init(updatedFilm);
+  }
+
   _renderFilmCard(film) {
     const filmsListContainerElement = this._filmsComponent.getElement().querySelector('.films-list__container');
 
-    const filmCardPresenter = new FilmCardPresenter(filmsListContainerElement);
+    const filmCardPresenter = new FilmCardPresenter(filmsListContainerElement, this._handleFilmChange);
     filmCardPresenter.init(film);
+    this._filmCardPresenter[film.id] = filmCardPresenter;
   }
 
   _renderCardsOfFilms(from, to) {
