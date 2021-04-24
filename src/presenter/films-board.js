@@ -9,9 +9,13 @@ import ShowMoreButtonView from '../view/show-more-button.js';
 export default class FilmsBoard {
   constructor(filmsContainer) {
     this._filmsContainer = filmsContainer;
-    this._filmsComponent = new FilmsView();
+    this._renderedFilmsQuantity = FILMS_STEP;
 
     this._sortComponent = new SortView();
+    this._filmsComponent = new FilmsView();
+    this._showMoreButtonComponent = new ShowMoreButtonView();
+
+    this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
   }
 
   init(films) {
@@ -56,24 +60,21 @@ export default class FilmsBoard {
       .forEach((film) => this._renderFilmCard(film));
   }
 
+  _handleShowMoreButtonClick() {
+    this._renderCardsOfFilms(this._renderedFilmsQuantity, this._renderedFilmsQuantity + FILMS_STEP);
+    this._renderedFilmsQuantity += FILMS_STEP;
+
+    // Проверка нужно ли прятать кнопку
+    if (FILMS_QUANTITY <= this._renderedFilmsQuantity) {
+      remove(this._showMoreButtonComponent);
+    }
+  }
+
   _renderShowMoreButton() {
-    let renderedFilmsQuantity = FILMS_STEP;
-    const showMoreButtonComponent = new ShowMoreButtonView();
     const filmsListElement = this._filmsComponent.getElement().querySelector('.films-list');
-    render(filmsListElement, showMoreButtonComponent);
+    render(filmsListElement, this._showMoreButtonComponent);
 
-    showMoreButtonComponent.setClickHandler(() => {
-      this._films
-        .slice(renderedFilmsQuantity, renderedFilmsQuantity + FILMS_STEP)
-        .forEach((item) => this._renderFilmCard(item));
-
-      renderedFilmsQuantity += FILMS_STEP;
-
-      // Проверка нужно ли прятать кнопку
-      if (FILMS_QUANTITY <= renderedFilmsQuantity) {
-        remove(showMoreButtonComponent);
-      }
-    });
+    this._showMoreButtonComponent.setClickHandler(this._handleShowMoreButtonClick);
   }
 
   _renderFilmsList() {
