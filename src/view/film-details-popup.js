@@ -195,6 +195,9 @@ export default class FilmDetailsPopup extends AbstractView {
     this._film = film;
     // Привяжем обработчик к контексту
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
   }
 
   getTemplate() {
@@ -206,10 +209,37 @@ export default class FilmDetailsPopup extends AbstractView {
     this._callback.closeBtnClick();
   }
 
+  _watchlistClickHandler() {
+    this._callback.watchlistClick();
+  }
+
+  _watchedClickHandler() {
+    this._callback.watchedClick();
+  }
+
+  _favoriteClickHandler() {
+    this._callback.favoriteClick();
+  }
+
   setCloseBtnClickHandler(callback) {
     // Колбэк запишем во внутреннее свойство
     this._callback.closeBtnClick = callback;
     // В addEventListener передадим абстрактный обработчик
     this.getElement().querySelector('.film-details__close-btn').addEventListener('click', this._closeBtnClickHandler);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector('#watchlist').addEventListener('click', this._watchlistClickHandler);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector('#watched').addEventListener('click', this._watchedClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector('#favorite').addEventListener('click', this._favoriteClickHandler);
   }
 }
