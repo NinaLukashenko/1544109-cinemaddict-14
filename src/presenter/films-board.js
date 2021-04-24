@@ -1,9 +1,8 @@
 import { remove, render } from '../utils/render.js';
-import { FILMS_QUANTITY, FILMS_STEP } from '../const.js';
+import { FILMS_STEP } from '../const.js';
 import SortView from '../view/sort.js';
 import FilmsView from '../view/films.js';
-import FilmCardView from '../view/film-card.js';
-import FilmDetailsPopupView from '../view/film-details-popup.js';
+import FilmCardPresenter from './film.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 
 export default class FilmsBoard {
@@ -29,29 +28,10 @@ export default class FilmsBoard {
   }
 
   _renderFilmCard(film) {
-    const filmCardComponent = new FilmCardView(film);
-    const footerElement = document.querySelector('.footer');
-
     const filmsListContainerElement = this._filmsComponent.getElement().querySelector('.films-list__container');
 
-    render(filmsListContainerElement, filmCardComponent);
-
-    // Попап с детальным описанием фильма
-    const showFilmDetailPopup = () => {
-      const filmDetailPopupComponent = new FilmDetailsPopupView(film);
-      footerElement.appendChild(filmDetailPopupComponent.getElement());
-      document.body.classList.add('hide-overflow');
-
-      filmDetailPopupComponent.setCloseBtnClickHandler(() => {
-        footerElement.removeChild(filmDetailPopupComponent.getElement());
-        document.body.classList.remove('hide-overflow');
-      });
-    };
-
-    // Обработчик событий на элементах карточки фильма
-    filmCardComponent.setFilmClickHandler(() => {
-      showFilmDetailPopup();
-    });
+    const filmCardPresenter = new FilmCardPresenter(filmsListContainerElement);
+    filmCardPresenter.init(film);
   }
 
   _renderCardsOfFilms(from, to) {
@@ -65,7 +45,7 @@ export default class FilmsBoard {
     this._renderedFilmsQuantity += FILMS_STEP;
 
     // Проверка нужно ли прятать кнопку
-    if (FILMS_QUANTITY <= this._renderedFilmsQuantity) {
+    if (this._films.length <= this._renderedFilmsQuantity) {
       remove(this._showMoreButtonComponent);
     }
   }
