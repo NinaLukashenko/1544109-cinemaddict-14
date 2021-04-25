@@ -13,10 +13,7 @@ const createSortTemplate = () => {
     `;
   }, '');
 
-  return `
-  <ul class="sort">
-    ${sortList}
-  </ul>`;
+  return `<ul class="sort">${sortList}</ul>`;
 };
 
 export default class Sort extends AbstractView {
