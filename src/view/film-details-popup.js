@@ -244,9 +244,10 @@ export default class FilmDetailsPopup extends SmartView {
 
   _emotionClickHandler(evt) {
     if (evt.target.tagName === 'IMG') {
+      const y = window.scrollY;
       this.updateState({
         currentEmotion: evt.target.parentElement.previousElementSibling.value,
-      });
+      }, false, y);
     }
   }
 

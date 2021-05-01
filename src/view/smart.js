@@ -8,7 +8,7 @@ export default class Smart extends Abstract {
 
   // М-д обновляет данные,
   // а также перерисовывает компонент, если тригер justDataUpdating равен false
-  updateState(update, justDataUpdating) {
+  updateState(update, justDataUpdating = false, scrollY) {
     if (!update) {
       return;
     }
@@ -24,6 +24,10 @@ export default class Smart extends Abstract {
     }
 
     this.updateElement();
+
+    setTimeout(() => {
+      document.querySelector('.film-details').scrollTop = scrollY + 130 + 64;
+    }, 0);
   }
 
   // М-д удаляет старый ДОМ-эл, создает новый, помещает новый вместо старого,
