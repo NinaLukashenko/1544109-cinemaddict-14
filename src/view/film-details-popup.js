@@ -1,8 +1,8 @@
-import AbstractView from './abstract.js';
+import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
 import { COMMENTS } from '../mock/film.js';
 
-const createFilmDetailsPopupTemplate = (film) => {
+const createFilmDetailsPopupTemplate = (filmState) => {
   const {
     poster,
     title,
@@ -18,8 +18,9 @@ const createFilmDetailsPopupTemplate = (film) => {
     release,
     age_rating,
     comments,
+    currentEmotion,
 
-  } = film;
+  } = filmState;
   const { watchlist, watched, favorite } = user_details;
   const { date, country } = release;
 
@@ -155,7 +156,9 @@ const createFilmDetailsPopupTemplate = (film) => {
         </ul>
 
         <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
+          <div class="film-details__add-emoji-label">
+            ${currentEmotion ? `<img src="images/emoji/${currentEmotion}.png" width="55" height="55" alt="emoji-${currentEmotion}">` : ''}
+          </div>
 
           <label class="film-details__comment-label">
             <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -189,10 +192,10 @@ const createFilmDetailsPopupTemplate = (film) => {
 </section>`;
 };
 
-export default class FilmDetailsPopup extends AbstractView {
+export default class FilmDetailsPopup extends SmartView {
   constructor(film) {
     super();
-    this._film = film;
+    this._filmState = FilmDetailsPopup.parseFilmToFilmState(film);
     // Привяжем обработчик к контексту
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -201,7 +204,11 @@ export default class FilmDetailsPopup extends AbstractView {
   }
 
   getTemplate() {
-    return createFilmDetailsPopupTemplate(this._film);
+    return createFilmDetailsPopupTemplate(this._filmState);
+  }
+
+  restoreHandlers() {
+
   }
 
   _closeBtnClickHandler() {
@@ -241,5 +248,21 @@ export default class FilmDetailsPopup extends AbstractView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('#favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  static parseFilmToFilmState(film) {
+    return Object.assign({}, film, { currentEmotion: null });
+  }
+
+  static parseFilmStateToFilm(filmState) {
+    filmState = Object.assign({}, filmState);
+
+    if (filmState.currentEmotion !== null) {
+      document.querySelector('.film-details__emoji-item').value = filmState.currentEmotion;
+    }
+
+    delete filmState.currentEmotion;
+
+    return filmState;
   }
 }
