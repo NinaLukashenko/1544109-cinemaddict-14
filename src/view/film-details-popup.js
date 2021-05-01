@@ -201,6 +201,9 @@ export default class FilmDetailsPopup extends SmartView {
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._emotionClickHandler = this._emotionClickHandler.bind(this);
+
+    this._setInnerHandlers();
   }
 
   getTemplate() {
@@ -208,7 +211,18 @@ export default class FilmDetailsPopup extends SmartView {
   }
 
   restoreHandlers() {
+    this._setInnerHandlers();
 
+    this.setCloseBtnClickHandler(this._callback.closeBtnClick);
+    this.setWatchlistClickHandler(this._callback.watchlistClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+  }
+
+  _setInnerHandlers() {
+    this.getElement()
+      .querySelector('.film-details__emoji-list')
+      .addEventListener('click', this._emotionClickHandler, true);
   }
 
   _closeBtnClickHandler() {
@@ -226,6 +240,14 @@ export default class FilmDetailsPopup extends SmartView {
 
   _favoriteClickHandler() {
     this._callback.favoriteClick();
+  }
+
+  _emotionClickHandler(evt) {
+    if (evt.target.tagName === 'IMG') {
+      this.updateState({
+        currentEmotion: evt.target.parentElement.previousElementSibling.value,
+      });
+    }
   }
 
   setCloseBtnClickHandler(callback) {

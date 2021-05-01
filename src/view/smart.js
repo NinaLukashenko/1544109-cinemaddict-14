@@ -3,19 +3,19 @@ import Abstract from './abstract';
 export default class Smart extends Abstract {
   constructor() {
     super();
-    this._data = {};
+    this._filmState = {};
   }
 
   // М-д обновляет данные,
   // а также перерисовывает компонент, если тригер justDataUpdating равен false
-  updateData(update, justDataUpdating) {
+  updateState(update, justDataUpdating) {
     if (!update) {
       return;
     }
 
-    this._data = Object.assign(
+    this._filmState = Object.assign(
       {},
-      this._data,
+      this._filmState,
       update,
     );
 
