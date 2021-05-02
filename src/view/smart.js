@@ -7,8 +7,10 @@ export default class Smart extends Abstract {
   }
 
   // М-д обновляет данные,
-  // а также перерисовывает компонент, если тригер justDataUpdating равен false
-  updateState(update, justDataUpdating = false, scrollTopPosition = null) {
+  // а также перерисовывает компонент, если тригер justDataUpdating равен false,
+  // justDataUpdating передаем как true, например: для поля text-area,
+  //  когда пользователь и так видит актуальное состояние
+  updateState(update, justStateUpdating = false, scrollTopPosition = null) {
     if (!update) {
       return;
     }
@@ -19,12 +21,13 @@ export default class Smart extends Abstract {
       update,
     );
 
-    if (justDataUpdating) {
+    if (justStateUpdating) {
       return;
     }
 
     this.updateElement();
 
+    // Возвращаем прокрутку элемента по вертикали
     if (scrollTopPosition !== null) {
       this.getElement().scrollTop = scrollTopPosition;
     }

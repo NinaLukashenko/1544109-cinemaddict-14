@@ -1,6 +1,7 @@
 import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
 import { COMMENTS } from '../mock/film.js';
+import { EMOJI } from '../const.js';
 
 const createFilmDetailsPopupTemplate = (filmState) => {
   const {
@@ -68,6 +69,18 @@ const createFilmDetailsPopupTemplate = (filmState) => {
         return `
             ${prev}`;
       }
+    }, '');
+  };
+
+  const createEmojiTemplate = () => {
+    return EMOJI.reduce((prev, item) => {
+      return `
+          ${prev}
+            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-${item}" value="${item}">
+            <label class="film-details__emoji-label" for="emoji-${item}">
+              <img src="./images/emoji/${item}.png" width="30" height="30" alt="emoji">
+            </label>
+      `;
     }, '');
   };
 
@@ -165,25 +178,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
           </label>
 
           <div class="film-details__emoji-list">
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
-            <label class="film-details__emoji-label" for="emoji-smile">
-              <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
-            <label class="film-details__emoji-label" for="emoji-sleeping">
-              <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
-            <label class="film-details__emoji-label" for="emoji-puke">
-              <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
-            </label>
-
-            <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
-            <label class="film-details__emoji-label" for="emoji-angry">
-              <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
-            </label>
+            ${createEmojiTemplate()}
           </div>
         </div>
       </section>
@@ -282,6 +277,7 @@ export default class FilmDetailsPopup extends SmartView {
   static parseFilmStateToFilm(filmState) {
     filmState = Object.assign({}, filmState);
 
+    // Заполняем значение скрытого поля ввода
     if (filmState.currentEmotion !== null) {
       document.querySelector('.film-details__emoji-item').value = filmState.currentEmotion;
     }
