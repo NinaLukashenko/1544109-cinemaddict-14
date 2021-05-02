@@ -244,10 +244,12 @@ export default class FilmDetailsPopup extends SmartView {
 
   _emotionClickHandler(evt) {
     if (evt.target.tagName === 'IMG') {
-      const y = window.scrollY;
+      // Определяем текущую прокрутку элемента по вертикали
+      const scrollTopPosition = this.getElement().scrollTop;
+
       this.updateState({
         currentEmotion: evt.target.parentElement.previousElementSibling.value,
-      }, false, y);
+      }, false, scrollTopPosition);
     }
   }
 
