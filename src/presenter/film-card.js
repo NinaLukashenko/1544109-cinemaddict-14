@@ -76,10 +76,10 @@ export default class FilmCard {
   }
 
   _handleWatchlistClick() {
-    this._film.user_details = Object.assign(this._film.user_details, { watchlist: !this._film.user_details.watchlist});
+    const newUserDetails = Object.assign({}, this._film.user_details, { watchlist: !this._film.user_details.watchlist});
 
     this._changeData(
-      Object.assign({}, this._film, { user_details: this._film.user_details }),
+      Object.assign({}, this._film, { user_details: newUserDetails }),
     );
   }
 
