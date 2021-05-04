@@ -1,3 +1,4 @@
+import he from 'he';
 import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
 import { COMMENTS } from '../mock/film.js';
@@ -20,6 +21,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
     age_rating,
     comments,
     currentEmotion,
+    currentComment,
 
   } = filmState;
   const { watchlist, watched, favorite } = user_details;
@@ -174,7 +176,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(currentComment)}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -271,7 +273,7 @@ export default class FilmDetailsPopup extends SmartView {
   }
 
   static parseFilmToFilmState(film) {
-    return Object.assign({}, film, { currentEmotion: null });
+    return Object.assign({}, film, { currentEmotion: null, currentComment: '' });
   }
 
 }
