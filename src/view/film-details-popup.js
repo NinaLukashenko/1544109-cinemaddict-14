@@ -274,16 +274,4 @@ export default class FilmDetailsPopup extends SmartView {
     return Object.assign({}, film, { currentEmotion: null });
   }
 
-  static parseFilmStateToFilm(filmState) {
-    filmState = Object.assign({}, filmState);
-
-    // Заполняем значение скрытого поля ввода
-    if (filmState.currentEmotion !== null) {
-      document.querySelector('.film-details__emoji-item').value = filmState.currentEmotion;
-    }
-
-    delete filmState.currentEmotion;
-
-    return filmState;
-  }
 }

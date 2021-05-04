@@ -1,6 +1,8 @@
 import { render, replace, remove } from '../utils/render.js';
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsPopupView from '../view/film-details-popup.js';
+import { UserAction, UpdateType } from '../const.js';
+
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -44,6 +46,10 @@ export default class FilmCard {
     remove(prevFilmCardComponent);
   }
 
+  destroy() {
+    remove(this._filmCardComponent);
+  }
+
   _handleFilmClick() {
     const footerElement = document.querySelector('.footer');
 
@@ -79,6 +85,8 @@ export default class FilmCard {
     const newUserDetails = Object.assign({}, this._film.user_details, { watchlist: !this._film.user_details.watchlist});
 
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign({}, this._film, { user_details: newUserDetails }),
     );
   }
@@ -87,6 +95,8 @@ export default class FilmCard {
     const newUserDetails = Object.assign({}, this._film.user_details, { watched: !this._film.user_details.watched});
 
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign({}, this._film, { user_details: newUserDetails }),
     );
   }
@@ -95,6 +105,8 @@ export default class FilmCard {
     const newUserDetails = Object.assign({}, this._film.user_details, { favorite: !this._film.user_details.favorite});
 
     this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
       Object.assign({}, this._film, { user_details: newUserDetails }),
     );
   }
