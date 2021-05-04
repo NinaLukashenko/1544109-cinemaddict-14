@@ -1,4 +1,4 @@
-export const FILMS_QUANTITY = 9;
+export const FILMS_QUANTITY = 18;
 export const FILMS_STEP = 5;
 
 export const SORTS = ['Sort by default', 'Sort by date', 'Sort by rating'];
@@ -15,4 +15,11 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+};
+
+export const FilterType = {
+  ALL: 'All',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
 };

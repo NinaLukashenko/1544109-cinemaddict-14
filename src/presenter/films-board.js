@@ -5,11 +5,13 @@ import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
 import FilmCardPresenter from './film-card.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
+import { filter } from '../utils/filter.js';
 
 export default class FilmsBoard {
-  constructor(filmsContainer, filmsModel) {
-    this._filmsContainer = filmsContainer;
+  constructor(filmsContainer, filmsModel, filterModel) {
     this._filmsModel = filmsModel;
+    this._filterModel = filterModel;
+    this._filmsContainer = filmsContainer;
     this._renderedFilmsQuantity = FILMS_STEP;
     this._filmCardPresenter = {};
 
@@ -26,6 +28,7 @@ export default class FilmsBoard {
     this._handleShowMoreButtonClick = this._handleShowMoreButtonClick.bind(this);
 
     this._filmsModel.addObserver(this._handleModelEvent);
+    this._filterModel.addObserver(this._handleModelEvent);
   }
 
   init() {
@@ -44,7 +47,11 @@ export default class FilmsBoard {
   }
 
   _getFilms() {
-    return this._filmsModel.getFilms();
+    const filterType = this._filterModel.getFilter();
+    const films = this._filmsModel.getFilms();
+    const filtredFilms = filter[filterType](films);
+
+    return filtredFilms;
   }
 
   _handleViewAction(actionType, updateType, update) {
