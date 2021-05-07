@@ -23,6 +23,7 @@ export default class FilmCard {
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
   }
 
   init(film) {
@@ -61,6 +62,8 @@ export default class FilmCard {
     filmDetailPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     filmDetailPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
     filmDetailPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    filmDetailPopupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
+
 
     footerElement.appendChild(filmDetailPopupComponent.getElement());
     document.body.classList.add('hide-overflow');
@@ -108,6 +111,17 @@ export default class FilmCard {
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
       Object.assign({}, this._film, { user_details: newUserDetails }),
+    );
+  }
+
+  _handleDeleteCommentClick(id) {
+    const currentComments = this._film.comments.slice().filter((item) => {
+      return item !== Number(id);
+    });
+    this._changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      Object.assign({}, this._film, { comments: currentComments }),
     );
   }
 }

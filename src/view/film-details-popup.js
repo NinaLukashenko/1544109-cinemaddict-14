@@ -62,7 +62,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${item.author}</span>
                   <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
-                  <button class="film-details__comment-delete">Delete</button>
+                  <button class="film-details__comment-delete" id=${item.id}>Delete</button>
                 </p>
               </div>
             </li>
@@ -199,6 +199,7 @@ export default class FilmDetailsPopup extends SmartView {
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._emotionClickHandler = this._emotionClickHandler.bind(this);
+    this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -214,6 +215,7 @@ export default class FilmDetailsPopup extends SmartView {
     this.setWatchlistClickHandler(this._callback.watchlistClick);
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setDeleteCommentClickHandler(this._callback.deleteCommentClick);
   }
 
   _setInnerHandlers() {
@@ -250,6 +252,11 @@ export default class FilmDetailsPopup extends SmartView {
     }
   }
 
+  _deleteCommentClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteCommentClick(evt.target.id);
+  }
+
   setCloseBtnClickHandler(callback) {
     // Колбэк запишем во внутреннее свойство
     this._callback.closeBtnClick = callback;
@@ -270,6 +277,17 @@ export default class FilmDetailsPopup extends SmartView {
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
     this.getElement().querySelector('#favorite').addEventListener('click', this._favoriteClickHandler);
+  }
+
+  setDeleteCommentClickHandler(callback) {
+    this._callback.deleteCommentClick = callback;
+
+    const deleteCommentButtons = this.getElement().querySelectorAll('.film-details__comment-delete');
+
+    Array.from(deleteCommentButtons).forEach((item) => {
+      item.addEventListener('click', this._deleteCommentClickHandler);
+    });
+
   }
 
   static parseFilmToFilmState(film) {
