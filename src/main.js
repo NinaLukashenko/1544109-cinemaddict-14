@@ -2,7 +2,6 @@ import { FILMS_QUANTITY } from './const.js';
 import { generateFilm } from './mock/film.js';
 import { render } from './utils/render';
 import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
-import SiteMenuView from './view/site-menu.js';
 import FilmsBoardPresenter from './presenter/films-board.js';
 import FilterPresenter from './presenter/filter.js';
 import FooterStatisticsView from './view/footer-statistics.js';

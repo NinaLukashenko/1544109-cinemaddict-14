@@ -69,7 +69,6 @@ export default class FilmsBoard {
   }
 
   _handleModelEvent(updateType, data) {
-    console.log(data);
     switch (updateType) {
       case UpdateType.PATCH:
         this._FilmCardPresenter[data.id].init(data);
