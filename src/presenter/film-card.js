@@ -143,7 +143,7 @@ export default class FilmCard {
     );
   }
 
-  _handleCommentFormSend(evt) {
-    console.log("We send form to server");
+  _handleCommentFormSend() {
+    // console.log("We send form to server");
   }
 }
