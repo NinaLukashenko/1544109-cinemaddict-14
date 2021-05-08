@@ -1,13 +1,7 @@
 import { render, replace, remove } from '../utils/render.js';
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsPopupView from '../view/film-details-popup.js';
-import { UserAction, UpdateType } from '../const.js';
-
-
-const Mode = {
-  DEFAULT: 'DEFAULT',
-  EDITING: 'POPUP',
-};
+import { UserAction, UpdateType, Mode } from '../const.js';
 
 export default class FilmCard {
   constructor(filmsListContainer, changeData, changeMode) {
@@ -16,6 +10,7 @@ export default class FilmCard {
     this._changeMode = changeMode;
 
     this._filmCardComponent = null;
+    this._filmDetailsPopupComponent = null; // Initial popup
     this._mode = Mode.DEFAULT;
     this._filmPopup = {};
 
@@ -26,7 +21,7 @@ export default class FilmCard {
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
   }
 
-  init(film) {
+  init(film, popup) {
     this._film = film;
 
     const prevFilmCardComponent = this._filmCardComponent;
@@ -36,6 +31,11 @@ export default class FilmCard {
     this._filmCardComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+
+    if (popup !== null) {
+      this._filmDetailsPopupComponent = popup;
+      this._openPopup();
+    }
 
     if (prevFilmCardComponent === null) {
       render(this._filmsListContainer, this._filmCardComponent);
@@ -52,29 +52,47 @@ export default class FilmCard {
   }
 
   _handleFilmClick() {
+    this._openPopup();
+  }
+
+  _openPopup() {
+    const prevFilmDetailsPopupComponent = this._filmDetailsPopupComponent;
+
     const footerElement = document.querySelector('.footer');
 
-    this._changeMode();
+    this._changeMode(); // Close all Opened Popups
     this._mode = Mode.POPUP;
-    const filmDetailPopupComponent = new FilmDetailsPopupView(this._film);
-    this._filmPopup[this._film.id] = filmDetailPopupComponent;
+    this._filmDetailsPopupComponent = new FilmDetailsPopupView(this._film);
+    this._filmPopup[this._film.id] = this._filmDetailsPopupComponent;
 
-    filmDetailPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    filmDetailPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
-    filmDetailPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    filmDetailPopupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
-
-
-    footerElement.appendChild(filmDetailPopupComponent.getElement());
-    document.body.classList.add('hide-overflow');
-
-    filmDetailPopupComponent.setCloseBtnClickHandler(() => {
-      footerElement.removeChild(filmDetailPopupComponent.getElement());
+    this._filmDetailsPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    this._filmDetailsPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
+    this._filmDetailsPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._filmDetailsPopupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
+    // Closing the popup
+    this._filmDetailsPopupComponent.setCloseBtnClickHandler(() => {
+      footerElement.removeChild(this._filmDetailsPopupComponent.getElement());
       document.body.classList.remove('hide-overflow');
     });
+    //Sending Form
+    this._filmDetailsPopupComponent.setCommentFormSendHandler(this._handleCommentFormSend);
+
+    // create Popup from scratch
+    if (prevFilmDetailsPopupComponent === null) {
+      footerElement.appendChild(this._filmDetailsPopupComponent.getElement());
+      document.body.classList.add('hide-overflow');
+      return;
+    }
+
+    // Replacing the popup
+    replace(this._filmDetailsPopupComponent, prevFilmDetailsPopupComponent);
+
+    // Removing "prev" popup
+    remove(prevFilmDetailsPopupComponent);
   }
 
   _closePopup() {
+    this._filmDetailsPopupComponent.unSetCommentFormSendHandler();
     remove(this._filmPopup[this._film.id]);
   }
 
@@ -123,5 +141,9 @@ export default class FilmCard {
       UpdateType.MINOR,
       Object.assign({}, this._film, { comments: currentComments }),
     );
+  }
+
+  _handleCommentFormSend(evt) {
+    console.log("We send form to server");
   }
 }

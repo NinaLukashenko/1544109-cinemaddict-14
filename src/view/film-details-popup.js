@@ -200,6 +200,7 @@ export default class FilmDetailsPopup extends SmartView {
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._emotionClickHandler = this._emotionClickHandler.bind(this);
     this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
+    this._commentFormSendHandler = this._commentFormSendHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -216,6 +217,8 @@ export default class FilmDetailsPopup extends SmartView {
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
     this.setDeleteCommentClickHandler(this._callback.deleteCommentClick);
+    this.setCommentFormSendHandler(this._callback.commentFormSend);
+    this.unSetCommentFormSendHandler(this._callback.commentFormSend);
   }
 
   _setInnerHandlers() {
@@ -257,6 +260,12 @@ export default class FilmDetailsPopup extends SmartView {
     this._callback.deleteCommentClick(evt.target.id);
   }
 
+  _commentFormSendHandler(evt) {
+    if ((evt.ctrlKey || evt.commandKey) && evt.key === 'Enter') {
+      this._callback.commentFormSend(evt.target);
+    }
+  }
+
   setCloseBtnClickHandler(callback) {
     // Колбэк запишем во внутреннее свойство
     this._callback.closeBtnClick = callback;
@@ -287,7 +296,16 @@ export default class FilmDetailsPopup extends SmartView {
     Array.from(deleteCommentButtons).forEach((item) => {
       item.addEventListener('click', this._deleteCommentClickHandler);
     });
+  }
 
+  setCommentFormSendHandler(callback) {
+    this._callback.commentFormSend = callback;
+
+    document.addEventListener('keydown', this._commentFormSendHandler);
+  }
+
+  unSetCommentFormSendHandler() {
+    document.removeEventListener('keydown', this._callback.commentFormSend);
   }
 
   static parseFilmToFilmState(film) {

@@ -1,5 +1,5 @@
 import { remove, render, RenderPosition } from '../utils/render.js';
-import { FILMS_STEP, UserAction, UpdateType } from '../const.js';
+import { FILMS_STEP, UserAction, UpdateType, Mode } from '../const.js';
 import SortView from '../view/sort.js';
 import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
@@ -14,6 +14,7 @@ export default class FilmsBoard {
     this._filmsContainer = filmsContainer;
     this._renderedFilmsQuantity = FILMS_STEP;
     this._filmCardPresenter = {};
+    this._openedPopup = null;
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -92,9 +93,17 @@ export default class FilmsBoard {
 
   _renderFilmCard(film) {
     const filmsListContainerElement = this._filmsComponent.getElement().querySelector('.films-list__container');
+    let popup = null;
+
+    if (this._openedPopup) {
+      const popupId = Number(Object.keys(this._openedPopup)[0]);
+      if (popupId === film.id) {
+        popup = this._openedPopup[popupId];
+      }
+    }
 
     const filmCardPresenter = new FilmCardPresenter(filmsListContainerElement, this._handleViewAction, this._handleModeChange);
-    filmCardPresenter.init(film);
+    filmCardPresenter.init(film, popup);
     this._filmCardPresenter[film.id] = filmCardPresenter;
   }
 
@@ -128,6 +137,9 @@ export default class FilmsBoard {
   _clearFilmsBoard({ resetRenderedFilmsQuantity = false } = {}) {
     const filmsQuantity = this._getFilms().length;
 
+    // Проверка наличия открытого попапа
+    this._checkOpenedPopup();
+
     Object
       .values(this._filmCardPresenter)
       .forEach((presenter) => presenter.destroy());
@@ -144,6 +156,16 @@ export default class FilmsBoard {
       // нужно скорректировать число показанных фильмов
       this._renderedFilmsQuantity = Math.min(filmsQuantity, this._renderedFilmsQuantity);
     }
+  }
+
+  _checkOpenedPopup() {
+    Object
+      .values(this._filmCardPresenter)
+      .forEach((presenter) => {
+        if (presenter._mode === Mode.POPUP) {
+          this._openedPopup = presenter._filmPopup;
+        }
+      });
   }
 
   _renderFilmsBoard() {

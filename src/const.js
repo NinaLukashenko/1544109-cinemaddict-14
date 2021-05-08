@@ -5,6 +5,11 @@ export const SORTS = ['Sort by default', 'Sort by date', 'Sort by rating'];
 
 export const EMOJI = ['smile', 'sleeping', 'puke', 'angry'];
 
+export const Mode = {
+  DEFAULT: 'DEFAULT',
+  POPUP: 'POPUP',
+};
+
 export const UserAction = {
   UPDATE_FILM: 'UPDATE_FILM',
   ADD_FILM: 'ADD_FILM',
