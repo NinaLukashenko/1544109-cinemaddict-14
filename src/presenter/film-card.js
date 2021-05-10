@@ -103,32 +103,32 @@ export default class FilmCard {
   }
 
   _handleWatchlistClick() {
-    const newUserDetails = Object.assign({}, this._film.user_details, { watchlist: !this._film.user_details.watchlist});
+    const newUserDetails = Object.assign({}, this._film.userDetails, { watchlist: !this._film.userDetails.watchlist});
 
     this._changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, { user_details: newUserDetails }),
+      Object.assign({}, this._film, { userDetails: newUserDetails }),
     );
   }
 
   _handleWatchedClick() {
-    const newUserDetails = Object.assign({}, this._film.user_details, { watched: !this._film.user_details.watched});
+    const newUserDetails = Object.assign({}, this._film.userDetails, { watched: !this._film.userDetails.watched});
 
     this._changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, { user_details: newUserDetails }),
+      Object.assign({}, this._film, { userDetails: newUserDetails }),
     );
   }
 
   _handleFavoriteClick() {
-    const newUserDetails = Object.assign({}, this._film.user_details, { favorite: !this._film.user_details.favorite});
+    const newUserDetails = Object.assign({}, this._film.userDetails, { favorite: !this._film.userDetails.favorite});
 
     this._changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      Object.assign({}, this._film, { user_details: newUserDetails }),
+      Object.assign({}, this._film, { userDetails: newUserDetails }),
     );
   }
 

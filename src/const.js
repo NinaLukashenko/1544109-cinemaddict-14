@@ -1,6 +1,9 @@
 export const FILMS_QUANTITY = 18;
 export const FILMS_STEP = 5;
 
+export const AUTHORIZATION = 'Basic eo0w59029889aik';
+export const END_POINT = 'https://14.ecmascript.pages.academy/cinemaddict';
+
 export const SORTS = ['Sort by default', 'Sort by date', 'Sort by rating'];
 
 export const EMOJI = ['smile', 'sleeping', 'puke', 'angry'];

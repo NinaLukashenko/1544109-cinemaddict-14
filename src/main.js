@@ -1,4 +1,4 @@
-import { FILMS_QUANTITY } from './const.js';
+import { FILMS_QUANTITY, AUTHORIZATION, END_POINT } from './const.js';
 import { generateFilm } from './mock/film.js';
 import { render } from './utils/render';
 import UserRankView from './view/user-rank.js'; // импорт по умолчанию (фигурные скобки не нужны)
@@ -7,8 +7,18 @@ import FilterPresenter from './presenter/filter.js';
 import FooterStatisticsView from './view/footer-statistics.js';
 import FilmsModel from './model/films.js';
 import FilterModel from './model/filter.js';
+import Api from './api.js';
 
 const films = new Array(FILMS_QUANTITY).fill().map((item, index) => generateFilm(index + 1));
+const api = new Api(END_POINT, AUTHORIZATION);
+api.getFilms().then((films) => {
+  console.log(films);
+  // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+  // а ещё на сервере используется snake_case, а у нас camelCase.
+  // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+  // Есть вариант получше - паттерн "Адаптер"
+});
+
 
 const filmsModel = new FilmsModel();
 filmsModel.setFilms(films);

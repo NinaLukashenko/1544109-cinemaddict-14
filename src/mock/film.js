@@ -60,24 +60,26 @@ const generateFilm = (filmId) => {
 
   return {
     id: filmId,
-    poster: POSTERS[randomNumber],
-    title: MOVIES[randomNumber],
-    alternative_title: MOVIES[randomNumber],
-    rating: getRandomInteger(0, 10),
-    year: generateDate(),
-    runtime: DURATIONS[randomNumber],
-    release: {
-      date: generateDate(),
-      country: COUNTRIES[getRandomInteger(0, 4)],
+    filmInfo: {
+      poster: POSTERS[randomNumber],
+      title: MOVIES[randomNumber],
+      alternativeTitle: MOVIES[randomNumber],
+      rating: getRandomInteger(0, 10),
+      year: generateDate(),
+      runtime: DURATIONS[randomNumber],
+      release: {
+        date: generateDate(),
+        country: COUNTRIES[getRandomInteger(0, 4)],
+      },
+      ageRating: getRandomInteger(5, 18),
+      director: DIRECTORS[getRandomInteger(0, 4)],
+      writers: generateArray(WRITERS),
+      actors: generateArray(ACTORS),
+      genre: generateArray(GENRES),
+      description: DESCRIPTIONS[randomNumber],
     },
-    age_rating: getRandomInteger(5, 18),
-    director: DIRECTORS[getRandomInteger(0, 4)],
-    writers: generateArray(WRITERS),
-    actors: generateArray(ACTORS),
-    genre: generateArray(GENRES),
-    description: DESCRIPTIONS[randomNumber],
     comments: generateComments(),
-    user_details: {
+    userDetails: {
       watchlist: Boolean(getRandomInteger(0, 1)),
       watched: Boolean(getRandomInteger(0, 1)),
       favorite: Boolean(getRandomInteger(0, 1)),

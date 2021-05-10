@@ -30,4 +30,99 @@ export default class Films extends Observer {
     this._notify(updateType, update);
   }
 
+  static adaptToClient(film) {
+    // Film Info
+    const adaptedFilmInfo = Object.assign(
+      {},
+      film.film_info,
+      {
+        alternativeTitle:  film.film_info.alternative_title,
+        ageRating:  film.film_info.age_rating,
+      },
+    );
+
+    adaptedFilmInfo.release.country = film.film_info.release.release_country;
+
+    // Ненужные ключи удаляем
+    delete adaptedFilmInfo.alternative_title;
+    delete adaptedFilmInfo.age_rating;
+    delete adaptedFilmInfo.release.release_country;
+
+    // User Details
+    const adaptedUserDetails = Object.assign(
+      {},
+      film.user_details,
+      {
+        watched:  film.user_details.already_watched,
+      },
+    );
+
+    // Ненужные ключи удаляем
+    delete adaptedUserDetails.already_watched;
+
+    // Film
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+        filmInfo: adaptedFilmInfo,
+        userDetails: adaptedUserDetails,
+      },
+    );
+
+    // Ненужные ключи удаляем
+    delete adaptedFilm.film_info;
+    delete adaptedFilm.user_details;
+
+    return adaptedFilm;
+  }
+
+  static adaptToServer(film) {
+    // Film Info
+    const adaptedFilmInfo = Object.assign(
+      {},
+      film.filmInfo,
+      {
+        alternative_title:  film.filmInfo.alternativeTitle,
+        age_rating:  film.filmInfo.ageRating,
+      },
+    );
+
+    adaptedFilmInfo.release.release_country = film.filmInfo.release.country;
+
+    // Ненужные ключи удаляем
+    delete adaptedFilmInfo.alternativeTitle;
+    delete adaptedFilmInfo.ageRating;
+    delete adaptedFilmInfo.release.country;
+
+    // User Details
+    const adaptedUserDetails = Object.assign(
+      {},
+      film.userDetails,
+      {
+        already_watched:  film.userDetails.watched,
+      },
+    );
+
+    // Ненужные ключи удаляем
+    delete adaptedUserDetails.watched;
+
+    // Film
+    const adaptedFilm = Object.assign(
+      {},
+      film,
+      {
+        film_info: adaptedFilmInfo,
+        user_details: adaptedUserDetails,
+      },
+    );
+
+    // Ненужные ключи удаляем
+    delete adaptedFilm.filmInfo;
+    delete adaptedFilm.userDetails;
+
+    console.log(adaptedFilm);
+    return adaptedFilm;
+  }
+
 }

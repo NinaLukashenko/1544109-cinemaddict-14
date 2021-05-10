@@ -8,23 +8,27 @@ const createFilmDetailsPopupTemplate = (filmState) => {
   const {
     poster,
     title,
-    alternative_title,
+    alternativeTitle,
     rating,
     runtime,
     genre,
     description,
-    user_details,
     director,
     writers,
     actors,
     release,
-    age_rating,
+    ageRating,
+
+  } = filmState.filmInfo;
+
+  const {
+    userDetails,
     comments,
     currentEmotion,
     currentComment,
-
   } = filmState;
-  const { watchlist, watched, favorite } = user_details;
+
+  const { watchlist, watched, favorite } = userDetails;
   const { date, country } = release;
 
   const createGenreLabel = () => {
@@ -96,14 +100,14 @@ const createFilmDetailsPopupTemplate = (filmState) => {
         <div class="film-details__poster">
           <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
 
-          <p class="film-details__age">${age_rating}+</p>
+          <p class="film-details__age">${ageRating}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${title}</h3>
-              <p class="film-details__title-original">Original: ${alternative_title}</p>
+              <p class="film-details__title-original">Original: ${alternativeTitle}</p>
             </div>
 
             <div class="film-details__rating">
