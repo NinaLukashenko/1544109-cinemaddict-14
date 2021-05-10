@@ -6,8 +6,10 @@ export default class Films extends Observer {
     this._films = [];
   }
 
-  setFilms(films) {
+  setFilms(updateType, films) {
     this._films = films.slice();
+
+    this._notify(updateType);
   }
 
   getFilms() {
@@ -37,14 +39,20 @@ export default class Films extends Observer {
       film.film_info,
       {
         alternativeTitle:  film.film_info.alternative_title,
+        rating:  film.film_info.total_rating,
         ageRating:  film.film_info.age_rating,
       },
     );
 
     adaptedFilmInfo.release.country = film.film_info.release.release_country;
+    if (adaptedFilmInfo.release.date !== null) {
+      adaptedFilmInfo.release.date = new Date(adaptedFilmInfo.release.date);
+    }
+
 
     // Ненужные ключи удаляем
     delete adaptedFilmInfo.alternative_title;
+    delete adaptedFilmInfo.total_rating;
     delete adaptedFilmInfo.age_rating;
     delete adaptedFilmInfo.release.release_country;
 
@@ -84,14 +92,20 @@ export default class Films extends Observer {
       film.filmInfo,
       {
         alternative_title:  film.filmInfo.alternativeTitle,
+        total_rating:  film.filmInfo.rating,
         age_rating:  film.filmInfo.ageRating,
       },
     );
 
     adaptedFilmInfo.release.release_country = film.filmInfo.release.country;
+    if (adaptedFilmInfo.release.date !== null) {
+      // На сервере дата хранится в ISO формате
+      adaptedFilmInfo.release.date = (adaptedFilmInfo.release.date).toISOString();
+    }
 
     // Ненужные ключи удаляем
     delete adaptedFilmInfo.alternativeTitle;
+    delete adaptedFilmInfo.rating;
     delete adaptedFilmInfo.ageRating;
     delete adaptedFilmInfo.release.country;
 

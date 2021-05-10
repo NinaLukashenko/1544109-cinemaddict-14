@@ -6,6 +6,7 @@ import FilmsListView from '../view/films-list.js';
 import FilmCardPresenter from './film-card.js';
 import ShowMoreButtonView from '../view/show-more-button.js';
 import { filter } from '../utils/filter.js';
+import LoadingView from '../view/loading.js';
 
 export default class FilmsBoard {
   constructor(filmsContainer, filmsModel, filterModel) {
@@ -15,12 +16,14 @@ export default class FilmsBoard {
     this._renderedFilmsQuantity = FILMS_STEP;
     this._filmCardPresenter = {};
     this._openedPopup = null;
+    this._isLoading = true;
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
 
     this._filmsComponent = new FilmsView();
     this._filmsListComponent = new FilmsListView();
+    this._loadingComponent = new LoadingView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleModelEvent = this._handleModelEvent.bind(this);
@@ -82,6 +85,11 @@ export default class FilmsBoard {
         this._clearFilmsBoard({ resetRenderedFilmsQuantity: true });
         this._renderFilmsBoard();
         break;
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderFilmsBoard();
+        break;
     }
   }
 
@@ -89,6 +97,10 @@ export default class FilmsBoard {
     Object
       .values(this._filmCardPresenter)
       .forEach((presenter) => presenter.resetView());
+  }
+
+  _renderLoading() {
+    render(this._filmsComponent, this._loadingComponent);
   }
 
   _renderFilmCard(film) {
@@ -147,6 +159,7 @@ export default class FilmsBoard {
 
     remove(this._sortComponent);
     remove(this._showMoreButtonComponent);
+    remove(this._loadingComponent);
 
     if (resetRenderedFilmsQuantity) {
       this._renderedFilmsQuantity = FILMS_STEP;
@@ -169,6 +182,11 @@ export default class FilmsBoard {
   }
 
   _renderFilmsBoard() {
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
+
     const films = this._getFilms();
     const filmsQuantity = films.length;
 
