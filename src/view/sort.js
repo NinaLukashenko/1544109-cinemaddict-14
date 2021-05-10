@@ -3,7 +3,7 @@ import { SORTS } from '../const.js';
 
 const createSortTemplate = () => {
   const sortList = SORTS.reduce((prev, item, index) => {
-    const sortClass = index === 2
+    const sortClass = index === 0
       ? 'sort__button--active'
       : '';
 

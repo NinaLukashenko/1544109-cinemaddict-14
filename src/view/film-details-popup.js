@@ -1,3 +1,4 @@
+import he from 'he';
 import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
 import { COMMENTS } from '../mock/film.js';
@@ -20,6 +21,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
     age_rating,
     comments,
     currentEmotion,
+    currentComment,
 
   } = filmState;
   const { watchlist, watched, favorite } = user_details;
@@ -60,7 +62,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
                 <p class="film-details__comment-info">
                   <span class="film-details__comment-author">${item.author}</span>
                   <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
-                  <button class="film-details__comment-delete">Delete</button>
+                  <button class="film-details__comment-delete" id=${item.id}>Delete</button>
                 </p>
               </div>
             </li>
@@ -174,7 +176,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
           </div>
 
           <label class="film-details__comment-label">
-            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+            <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${he.encode(currentComment)}</textarea>
           </label>
 
           <div class="film-details__emoji-list">
@@ -197,6 +199,8 @@ export default class FilmDetailsPopup extends SmartView {
     this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
     this._emotionClickHandler = this._emotionClickHandler.bind(this);
+    this._deleteCommentClickHandler = this._deleteCommentClickHandler.bind(this);
+    this._commentFormSendHandler = this._commentFormSendHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -212,6 +216,9 @@ export default class FilmDetailsPopup extends SmartView {
     this.setWatchlistClickHandler(this._callback.watchlistClick);
     this.setWatchedClickHandler(this._callback.watchedClick);
     this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setDeleteCommentClickHandler(this._callback.deleteCommentClick);
+    this.setCommentFormSendHandler(this._callback.commentFormSend);
+    this.unSetCommentFormSendHandler(this._callback.commentFormSend);
   }
 
   _setInnerHandlers() {
@@ -248,6 +255,17 @@ export default class FilmDetailsPopup extends SmartView {
     }
   }
 
+  _deleteCommentClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteCommentClick(evt.target.id);
+  }
+
+  _commentFormSendHandler(evt) {
+    if ((evt.ctrlKey || evt.commandKey) && evt.key === 'Enter') {
+      this._callback.commentFormSend(evt.target);
+    }
+  }
+
   setCloseBtnClickHandler(callback) {
     // Колбэк запишем во внутреннее свойство
     this._callback.closeBtnClick = callback;
@@ -270,20 +288,28 @@ export default class FilmDetailsPopup extends SmartView {
     this.getElement().querySelector('#favorite').addEventListener('click', this._favoriteClickHandler);
   }
 
+  setDeleteCommentClickHandler(callback) {
+    this._callback.deleteCommentClick = callback;
+
+    const deleteCommentButtons = this.getElement().querySelectorAll('.film-details__comment-delete');
+
+    Array.from(deleteCommentButtons).forEach((item) => {
+      item.addEventListener('click', this._deleteCommentClickHandler);
+    });
+  }
+
+  setCommentFormSendHandler(callback) {
+    this._callback.commentFormSend = callback;
+
+    document.addEventListener('keydown', this._commentFormSendHandler);
+  }
+
+  unSetCommentFormSendHandler() {
+    document.removeEventListener('keydown', this._callback.commentFormSend);
+  }
+
   static parseFilmToFilmState(film) {
-    return Object.assign({}, film, { currentEmotion: null });
+    return Object.assign({}, film, { currentEmotion: null, currentComment: '' });
   }
 
-  static parseFilmStateToFilm(filmState) {
-    filmState = Object.assign({}, filmState);
-
-    // Заполняем значение скрытого поля ввода
-    if (filmState.currentEmotion !== null) {
-      document.querySelector('.film-details__emoji-item').value = filmState.currentEmotion;
-    }
-
-    delete filmState.currentEmotion;
-
-    return filmState;
-  }
 }
