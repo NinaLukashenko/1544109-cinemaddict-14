@@ -1,8 +1,9 @@
 import he from 'he';
 import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
-import { COMMENTS } from '../mock/film.js';
 import { EMOJI } from '../const.js';
+
+const COMMENTS = [];
 
 const createFilmDetailsPopupTemplate = (filmState) => {
   const {

@@ -9,7 +9,7 @@ import { filter } from '../utils/filter.js';
 import LoadingView from '../view/loading.js';
 
 export default class FilmsBoard {
-  constructor(filmsContainer, filmsModel, filterModel) {
+  constructor(filmsContainer, filmsModel, filterModel, api) {
     this._filmsModel = filmsModel;
     this._filterModel = filterModel;
     this._filmsContainer = filmsContainer;
@@ -17,6 +17,7 @@ export default class FilmsBoard {
     this._filmCardPresenter = {};
     this._openedPopup = null;
     this._isLoading = true;
+    this._api = api;
 
     this._sortComponent = null;
     this._showMoreButtonComponent = null;
@@ -61,7 +62,10 @@ export default class FilmsBoard {
   _handleViewAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this._filmsModel.updateFilm(updateType, update);
+        this._api.updateFilm(update).
+          then( (response) => {
+            this._filmsModel.updateFilm(updateType, response);
+          });
         break;
       case UserAction.ADD_FILM:
         this._filmsModel.addFilm(updateType, update);

@@ -20,7 +20,7 @@ const filterModel = new FilterModel();
 
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmsModel);
 
-const filmsBoardPresenter = new FilmsBoardPresenter(siteMainElement, filmsModel, filterModel);
+const filmsBoardPresenter = new FilmsBoardPresenter(siteMainElement, filmsModel, filterModel, api);
 
 render(headerElement, new UserRankView());
 filterPresenter.init();
