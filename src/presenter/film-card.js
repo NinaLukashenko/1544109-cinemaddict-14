@@ -96,9 +96,6 @@ export default class FilmCard {
         this._filmDetailsPopupComponent = this._getPopup();
         this._footerElement.appendChild(this._filmDetailsPopupComponent.getElement());
         document.body.classList.add('hide-overflow');
-      })
-      .catch((error) => {
-
       });
   }
 

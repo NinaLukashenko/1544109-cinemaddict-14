@@ -1,5 +1,5 @@
 import { remove, render, RenderPosition } from '../utils/render.js';
-import { FILMS_STEP, UserAction, UpdateType, Mode } from '../const.js';
+import { FILMS_STEP, UserAction, UpdateType } from '../const.js';
 import SortView from '../view/sort.js';
 import FilmsView from '../view/films.js';
 import FilmsListView from '../view/films-list.js';
