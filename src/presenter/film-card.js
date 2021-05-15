@@ -4,7 +4,7 @@ import FilmDetailsPopupView from '../view/film-details-popup.js';
 import { UserAction, UpdateType, Mode } from '../const.js';
 
 export default class FilmCard {
-  constructor(filmsListContainer, changeData, changeMode) {
+  constructor(filmsListContainer, changeData, changeMode, api) {
     this._filmsListContainer = filmsListContainer;
     this._changeData = changeData;
     this._changeMode = changeMode;
@@ -12,7 +12,10 @@ export default class FilmCard {
     this._filmCardComponent = null;
     this._filmDetailsPopupComponent = null; // Initial popup
     this._mode = Mode.DEFAULT;
-    this._filmPopup = {};
+    this._film = null;
+    this._comments = null;
+    this._footerElement = document.querySelector('.footer');
+    this._api = api;
 
     this._handleFilmClick = this._handleFilmClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
@@ -21,7 +24,7 @@ export default class FilmCard {
     this._handleDeleteCommentClick = this._handleDeleteCommentClick.bind(this);
   }
 
-  init(film, popup) {
+  init(film) {
     this._film = film;
 
     const prevFilmCardComponent = this._filmCardComponent;
@@ -32,9 +35,8 @@ export default class FilmCard {
     this._filmCardComponent.setWatchedClickHandler(this._handleWatchedClick);
     this._filmCardComponent.setFavoriteClickHandler(this._handleFavoriteClick);
 
-    if (popup !== null) {
-      this._filmDetailsPopupComponent = popup;
-      this._openPopup();
+    if (this._mode === Mode.POPUP) {
+      this._updatePopup();
     }
 
     if (prevFilmCardComponent === null) {
@@ -47,6 +49,10 @@ export default class FilmCard {
     remove(prevFilmCardComponent);
   }
 
+  getFilmId() {
+    return this._film !== null ? this._film.id : null;
+  }
+
   destroy() {
     remove(this._filmCardComponent);
   }
@@ -55,45 +61,49 @@ export default class FilmCard {
     this._openPopup();
   }
 
-  _openPopup() {
-    const prevFilmDetailsPopupComponent = this._filmDetailsPopupComponent;
-
-    const footerElement = document.querySelector('.footer');
-
-    this._changeMode(); // Close all Opened Popups
-    this._mode = Mode.POPUP;
-    this._filmDetailsPopupComponent = new FilmDetailsPopupView(this._film);
-    this._filmPopup[this._film.id] = this._filmDetailsPopupComponent;
-
-    this._filmDetailsPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
-    this._filmDetailsPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
-    this._filmDetailsPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._filmDetailsPopupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
+  _getPopup() {
+    const filmDetailsPopupComponent = new FilmDetailsPopupView(this._film, this._comments);
+    filmDetailsPopupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
+    filmDetailsPopupComponent.setWatchedClickHandler(this._handleWatchedClick);
+    filmDetailsPopupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    filmDetailsPopupComponent.setDeleteCommentClickHandler(this._handleDeleteCommentClick);
     // Closing the popup
-    this._filmDetailsPopupComponent.setCloseBtnClickHandler(() => {
-      footerElement.removeChild(this._filmDetailsPopupComponent.getElement());
+    filmDetailsPopupComponent.setCloseBtnClickHandler(() => {
+      this._footerElement.removeChild(filmDetailsPopupComponent.getElement());
       document.body.classList.remove('hide-overflow');
     });
     //Sending Form
-    this._filmDetailsPopupComponent.setCommentFormSendHandler(this._handleCommentFormSend);
+    filmDetailsPopupComponent.setCommentFormSendHandler(this._handleCommentFormSend);
+    return filmDetailsPopupComponent;
+  }
 
-    // create Popup from scratch
-    if (prevFilmDetailsPopupComponent === null) {
-      footerElement.appendChild(this._filmDetailsPopupComponent.getElement());
-      document.body.classList.add('hide-overflow');
-      return;
-    }
-
+  _updatePopup() {
+    const prevFilmDetailsPopupComponent = this._filmDetailsPopupComponent;
+    this._filmDetailsPopupComponent = this._getPopup();
     // Replacing the popup
     replace(this._filmDetailsPopupComponent, prevFilmDetailsPopupComponent);
-
     // Removing "prev" popup
     remove(prevFilmDetailsPopupComponent);
   }
 
+  _openPopup() {
+    this._changeMode(); // Close all Opened Popups
+
+    this._api.getComments(this._film.id)
+      .then((response) => {
+        this._mode = Mode.POPUP;
+        this._comments = response;
+        this._filmDetailsPopupComponent = this._getPopup();
+        this._footerElement.appendChild(this._filmDetailsPopupComponent.getElement());
+        document.body.classList.add('hide-overflow');
+      })
+      .catch((error) => {
+
+      });
+  }
+
   _closePopup() {
     this._filmDetailsPopupComponent.unSetCommentFormSendHandler();
-    remove(this._filmPopup[this._film.id]);
   }
 
   resetView() {

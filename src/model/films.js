@@ -100,7 +100,8 @@ export default class Films extends Observer {
     adaptedFilmInfo.release.release_country = film.filmInfo.release.country;
     if (adaptedFilmInfo.release.date !== null) {
       // На сервере дата хранится в ISO формате
-      adaptedFilmInfo.release.date = (adaptedFilmInfo.release.date).toISOString();
+      // const dateJs = new Date(adaptedFilmInfo.release.date);
+      adaptedFilmInfo.release.date = adaptedFilmInfo.release.date.toISOString();
     }
 
     // Ненужные ключи удаляем
@@ -135,7 +136,6 @@ export default class Films extends Observer {
     delete adaptedFilm.filmInfo;
     delete adaptedFilm.userDetails;
 
-    console.log(adaptedFilm);
     return adaptedFilm;
   }
 

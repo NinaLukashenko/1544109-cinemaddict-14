@@ -3,9 +3,7 @@ import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
 import { EMOJI } from '../const.js';
 
-const COMMENTS = [];
-
-const createFilmDetailsPopupTemplate = (filmState) => {
+const createFilmDetailsPopupTemplate = (filmState, filmComments) => {
   const {
     poster,
     title,
@@ -53,29 +51,24 @@ const createFilmDetailsPopupTemplate = (filmState) => {
     }, '');
   };
 
-  const createCommentTemplate = () => {
-    return COMMENTS.reduce((prev, item) => {
-      if (comments.includes(item.id)) {
-        return `
-            ${prev}
-            <li class="film-details__comment">
-              <span class="film-details__comment-emoji">
-                <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
-              </span>
-              <div>
-                <p class="film-details__comment-text">${item.text}</p>
-                <p class="film-details__comment-info">
-                  <span class="film-details__comment-author">${item.author}</span>
-                  <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
-                  <button class="film-details__comment-delete" id=${item.id}>Delete</button>
-                </p>
-              </div>
-            </li>
-        `;
-      } else {
-        return `
-            ${prev}`;
-      }
+  const createCommentTemplate = (filmComments) => {
+    return filmComments.reduce((prev, item) => {
+      return `
+          ${prev}
+          <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${item.comment}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${item.author}</span>
+                <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
+                <button class="film-details__comment-delete" id=${item.id}>Delete</button>
+              </p>
+            </div>
+          </li>
+      `;
     }, '');
   };
 
@@ -172,7 +165,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${createCommentTemplate()}
+          ${createCommentTemplate(filmComments)}
         </ul>
 
         <div class="film-details__new-comment">
@@ -195,9 +188,10 @@ const createFilmDetailsPopupTemplate = (filmState) => {
 };
 
 export default class FilmDetailsPopup extends SmartView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._filmState = FilmDetailsPopup.parseFilmToFilmState(film);
+    this._comments = comments;
     // Привяжем обработчик к контексту
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -211,7 +205,7 @@ export default class FilmDetailsPopup extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsPopupTemplate(this._filmState);
+    return createFilmDetailsPopupTemplate(this._filmState, this._comments);
   }
 
   restoreHandlers() {
