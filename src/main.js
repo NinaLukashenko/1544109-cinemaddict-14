@@ -35,3 +35,7 @@ api.getFilms()
     filmsModel.setFilms(UpdateType.INIT, []);
     render(footerStatisticsElement, new FooterStatisticsView(0));
   });
+
+window.addEventListener('load', () => {
+  navigator.serviceWorker.register('/sw.js');
+});
