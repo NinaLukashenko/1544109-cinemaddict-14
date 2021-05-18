@@ -1,30 +1,33 @@
 import he from 'he';
 import SmartView from './smart.js';
 import { humanizeDate, DateFormat } from '../utils/date.js';
-import { COMMENTS } from '../mock/film.js';
 import { EMOJI } from '../const.js';
 
-const createFilmDetailsPopupTemplate = (filmState) => {
+const createFilmDetailsPopupTemplate = (filmState, filmComments) => {
   const {
     poster,
     title,
-    alternative_title,
+    alternativeTitle,
     rating,
     runtime,
     genre,
     description,
-    user_details,
     director,
     writers,
     actors,
     release,
-    age_rating,
+    ageRating,
+
+  } = filmState.filmInfo;
+
+  const {
+    userDetails,
     comments,
     currentEmotion,
     currentComment,
-
   } = filmState;
-  const { watchlist, watched, favorite } = user_details;
+
+  const { watchlist, watched, favorite } = userDetails;
   const { date, country } = release;
 
   const createGenreLabel = () => {
@@ -48,29 +51,24 @@ const createFilmDetailsPopupTemplate = (filmState) => {
     }, '');
   };
 
-  const createCommentTemplate = () => {
-    return COMMENTS.reduce((prev, item) => {
-      if (comments.includes(item.id)) {
-        return `
-            ${prev}
-            <li class="film-details__comment">
-              <span class="film-details__comment-emoji">
-                <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
-              </span>
-              <div>
-                <p class="film-details__comment-text">${item.text}</p>
-                <p class="film-details__comment-info">
-                  <span class="film-details__comment-author">${item.author}</span>
-                  <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
-                  <button class="film-details__comment-delete" id=${item.id}>Delete</button>
-                </p>
-              </div>
-            </li>
-        `;
-      } else {
-        return `
-            ${prev}`;
-      }
+  const createCommentTemplate = (filmComments) => {
+    return filmComments.reduce((prev, item) => {
+      return `
+          ${prev}
+          <li class="film-details__comment">
+            <span class="film-details__comment-emoji">
+              <img src="./images/emoji/${item.emotion}.png" width="55" height="55" alt="emoji-${item.emotion}">
+            </span>
+            <div>
+              <p class="film-details__comment-text">${item.comment}</p>
+              <p class="film-details__comment-info">
+                <span class="film-details__comment-author">${item.author}</span>
+                <span class="film-details__comment-day">${humanizeDate(item.date, DateFormat.DATETIME)}</span>
+                <button class="film-details__comment-delete" id=${item.id}>Delete</button>
+              </p>
+            </div>
+          </li>
+      `;
     }, '');
   };
 
@@ -94,16 +92,16 @@ const createFilmDetailsPopupTemplate = (filmState) => {
       </div>
       <div class="film-details__info-wrap">
         <div class="film-details__poster">
-          <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+          <img class="film-details__poster-img" src="./${poster}" alt="">
 
-          <p class="film-details__age">${age_rating}+</p>
+          <p class="film-details__age">${ageRating}+</p>
         </div>
 
         <div class="film-details__info">
           <div class="film-details__info-head">
             <div class="film-details__title-wrap">
               <h3 class="film-details__title">${title}</h3>
-              <p class="film-details__title-original">Original: ${alternative_title}</p>
+              <p class="film-details__title-original">Original: ${alternativeTitle}</p>
             </div>
 
             <div class="film-details__rating">
@@ -167,7 +165,7 @@ const createFilmDetailsPopupTemplate = (filmState) => {
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
         <ul class="film-details__comments-list">
-          ${createCommentTemplate()}
+          ${createCommentTemplate(filmComments)}
         </ul>
 
         <div class="film-details__new-comment">
@@ -190,9 +188,10 @@ const createFilmDetailsPopupTemplate = (filmState) => {
 };
 
 export default class FilmDetailsPopup extends SmartView {
-  constructor(film) {
+  constructor(film, comments) {
     super();
     this._filmState = FilmDetailsPopup.parseFilmToFilmState(film);
+    this._comments = comments;
     // Привяжем обработчик к контексту
     this._closeBtnClickHandler = this._closeBtnClickHandler.bind(this);
     this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
@@ -206,7 +205,7 @@ export default class FilmDetailsPopup extends SmartView {
   }
 
   getTemplate() {
-    return createFilmDetailsPopupTemplate(this._filmState);
+    return createFilmDetailsPopupTemplate(this._filmState, this._comments);
   }
 
   restoreHandlers() {

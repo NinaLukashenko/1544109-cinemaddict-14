@@ -9,12 +9,10 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
     ? 'main-navigation__item--active'
     : '';
 
-  const filterCountElement = isCurrentFilterType
-    ? ''
-    : `<span class="main-navigation__item-count">${count}</span>`;
-
   return `
-      <a href="#${name.toLowerCase()}" class="main-navigation__item ${filterClassName}" data-filter=${name}>${name} ${filterCountElement}</a>
+      <a href="#${name.toLowerCase()}" class="main-navigation__item ${filterClassName}" data-filter=${name}>
+        ${name} <span class="main-navigation__item-count">${count}</span>
+      </a>
     `;
 };
 
