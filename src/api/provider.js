@@ -56,15 +56,11 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getComments(movieId)
         .then((comments) => {
-          const items = createStoreStructure(comments);
-          this._store.setItems(items);
           return comments;
         });
     }
 
-    const storeComments = Object.values(this._store.getItems());
-
-    return Promise.resolve(storeComments);
+    return Promise.resolve([]);
   }
 
   sync() {
