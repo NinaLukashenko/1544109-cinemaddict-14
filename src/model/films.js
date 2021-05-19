@@ -44,17 +44,23 @@ export default class Films extends Observer {
       },
     );
 
-    adaptedFilmInfo.release.country = film.film_info.release.release_country;
-    if (adaptedFilmInfo.release.date !== null) {
-      adaptedFilmInfo.release.date = new Date(adaptedFilmInfo.release.date);
-    }
+    const adaptedRelease = Object.assign(
+      {},
+      film.film_info.release,
+      {
+        country: film.film_info.release.release_country,
+        date: new Date(film.film_info.release.date),
+      },
+    );
+
+    adaptedFilmInfo.release = adaptedRelease;
+    delete adaptedFilmInfo.release.release_country;
 
 
     // Ненужные ключи удаляем
     delete adaptedFilmInfo.alternative_title;
     delete adaptedFilmInfo.total_rating;
     delete adaptedFilmInfo.age_rating;
-    delete adaptedFilmInfo.release.release_country;
 
     // User Details
     const adaptedUserDetails = Object.assign(
@@ -97,12 +103,16 @@ export default class Films extends Observer {
       },
     );
 
-    adaptedFilmInfo.release.release_country = film.filmInfo.release.country;
-    if (adaptedFilmInfo.release.date !== null) {
-      // На сервере дата хранится в ISO формате
-      // const dateJs = new Date(adaptedFilmInfo.release.date);
-      adaptedFilmInfo.release.date = adaptedFilmInfo.release.date.toISOString();
-    }
+    const adaptedRelease = Object.assign(
+      {},
+      film.filmInfo.release,
+      {
+        release_country: film.filmInfo.release.country,
+        date: film.filmInfo.release.date.toISOString(),
+      },
+    );
+
+    adaptedFilmInfo.release = adaptedRelease;
 
     // Ненужные ключи удаляем
     delete adaptedFilmInfo.alternativeTitle;
