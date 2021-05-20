@@ -2,6 +2,8 @@ import { render, replace, remove } from '../utils/render.js';
 import FilmCardView from '../view/film-card.js';
 import FilmDetailsPopupView from '../view/film-details-popup.js';
 import { UserAction, UpdateType, Mode } from '../const.js';
+import { isOnline } from '../utils/common.js';
+import { toast } from '../utils/toast.js';
 
 export default class FilmCard {
   constructor(filmsListContainer, changeData, changeMode, api) {
@@ -140,6 +142,11 @@ export default class FilmCard {
   }
 
   _handleDeleteCommentClick(id) {
+    if (!isOnline()) {
+      toast('You can\'t delete comment offline');
+      return;
+    }
+
     const currentComments = this._film.comments.slice().filter((item) => {
       return item !== Number(id);
     });
@@ -151,6 +158,10 @@ export default class FilmCard {
   }
 
   _handleCommentFormSend() {
+    if (!isOnline()) {
+      toast('You can\'t add comment offline');
+      return;
+    }
     // console.log("We send form to server");
   }
 }
